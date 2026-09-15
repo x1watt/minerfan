@@ -33,7 +33,7 @@ class _FileStore implements I2pContentStore {
   }
 }
 
-/// This app's own I2P node (geograms/i2p-dart: pure Dart, its own isolate,
+/// This app's own I2P node (x1watt/i2p-dart: pure Dart, its own isolate,
 /// no router to install): NTCP2 to the public I2P network, inbound and
 /// outbound tunnels, a LeaseSet in the network database, and a `.b32.i2p`
 /// address that stays the same across starts. Other clients (minerfan and

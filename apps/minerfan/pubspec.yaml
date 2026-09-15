@@ -19,7 +19,7 @@ dependencies:
     path: ../../packages/utxo_core
   cesc_core:
     path: ../../packages/cesc_core
-  # Pure-Dart I2P node (BSD-3, geograms/i2p-dart), the local checkout.
+  # Pure-Dart I2P node (BSD-3, x1watt/i2p-dart), the local checkout next to this repo.
   i2p:
     path: ../../../i2p-dart
   # XPRS packets, signatures and sealing, vendored from the xprs app.

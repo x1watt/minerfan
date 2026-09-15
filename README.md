@@ -37,6 +37,15 @@ wallet like any other incoming transfer.
 
 ## Running
 
+The app uses the pure-Dart I2P node from
+[x1watt/i2p-dart](https://github.com/x1watt/i2p-dart) as a path dependency,
+so clone it next to this repository:
+
+```sh
+git clone https://github.com/x1watt/minerfan.git
+git clone https://github.com/x1watt/i2p-dart.git   # branch release-0.3.0
+```
+
 ```sh
 cd packages/xmr_core
 dart pub get

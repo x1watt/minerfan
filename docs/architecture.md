@@ -127,7 +127,7 @@ several miners:
   miner and wallet ids. Categorization only, for a later comparison of what
   is worth mining; the Miners list shows each miner's class and algorithm.
 - Private network (`lib/network/`): the app's own I2P node from
-  geograms/i2p-dart (pure Dart, its own isolate, no router to install):
+  x1watt/i2p-dart (pure Dart, its own isolate, no router to install):
   NTCP2 to the public I2P network, inbound and outbound 1-hop tunnels, a
   LeaseSet2 in the netDB and a `.b32.i2p` address. On by default on
   desktops, off on phones; a switch, the status, the callsign, npub and

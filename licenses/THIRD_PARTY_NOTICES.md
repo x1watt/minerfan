@@ -15,7 +15,7 @@ executed at runtime.
 | Monero levin client pieces (portable storage) | go-monero levin client (via P2Pool consensus) | Apache-2.0 |
 | Monero serialization, difficulty algorithm, hard fork table, levin and cryptonote protocol definitions, key derivation | monero-project/monero, https://github.com/monero-project/monero | BSD-3-Clause |
 | Monero wallet: English mnemonic word list and checksum (src/mnemonics), hash to point (crypto-ops.c), CLSAG (rctSigs.cpp), Bulletproofs+ (bulletproofs_plus.cc), decoy selection (wallet2.cpp gamma_picker), transaction weight and output construction | monero-project/monero, https://github.com/monero-project/monero | BSD-3-Clause |
-| I2P node (NTCP2, tunnels, netDB, LeaseSet2, datagrams), used as a library | geograms/i2p-dart (Max Brito), path `../geogram/i2p-dart` | BSD-3-Clause |
+| I2P node (NTCP2, tunnels, netDB, LeaseSet2, datagrams), used as a library | x1watt/i2p-dart (Max Brito), https://github.com/x1watt/i2p-dart, path `../i2p-dart` | BSD-3-Clause |
 | i2p-dart's dependencies: cryptography, pointycastle, archive, crypto | pub.dev packages | Apache-2.0, MIT, MIT/BSD-3, BSD-3-Clause |
 | XPRS packets, identifiers, short-Schnorr signatures, sealed bodies, parts, receipts and the transport vocabulary (`packages/xprs_wire`, copied unchanged apart from import paths and the profile key hook) | xprs app (`app/lib/services/xprs/`) and reticulum-dart (`lib/src/util/xprs_crypto.dart`, `nostr_crypto.dart`), Copyright (c) Max Brito and XPRS contributors | BSD-3-Clause |
 | xprs_wire's dependencies: pointycastle, crypto, bech32, hex | pub.dev packages | MIT, BSD-3-Clause, MIT, MIT |
