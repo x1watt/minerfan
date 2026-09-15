@@ -56,8 +56,8 @@ This file records where the work stands.
    found block 3,202,858 (`8c96af86...`), accepted by the network (explorer:
    2 confirmations, coinbase 20 CESC to `CSqd18riXQjBy6vUNcnfi7kwHS7fDGUFE2`,
    the key of `~/.local/share/minerfan/cryptoescudo/wallet-mnemonic.txt`,
-   m/44'/111'/0'/0/0). The GPU ran at about 2% duty (13 kH/s) for a 25%
-   target while the Monero app mined on the CPU.
+   m/44'/111'/0'/0/0). The GPU ran at about 2% duty (13 kH/s) to stay at its
+   effort target while the Monero app mined on the CPU.
 
 9. SPV wallet (`utxo_core/lib/src/wallet.dart`): BIP44 account watched by
    its xpub, BIP37 bloom filter loaded into every peer, filtered blocks in
@@ -109,7 +109,7 @@ This file records where the work stands.
 
 17. **Incident, 2026-09-14 21:00 to 21:52:** the desktop miner took about
     70% of the blocks (97 accepted and 19 self-orphaned between heights
-    3,202,921 and 3,203,060) at a 25% effort, and the difficulty doubled.
+    3,202,921 and 3,203,060), far above its effort target, and the difficulty doubled.
     Cause: any message to the GPU miner (new work, a duty update) ended its
     rest early, so when blocks came fast the GPU ran at full speed whatever
     the duty (131 kH/s at a 2% duty with new work every 300 ms), which made

@@ -57,7 +57,7 @@ several miners:
   text. `UtxoMiner` (`lib/miners/utxo_miner.dart`) is solo mining on any
   Bitcoin-family coin (Cryptoescudo today, `<coin>-miner.json`): payout
   address (default: the coin's first wallet), effort (target share of the
-  network, 25% by default, applied at once), GPU and CPU threads.
+  network, adjustable, applied at once), GPU and CPU threads.
 - `lib/chains/utxo_chain.dart`: `UtxoCoin` (parameters and checkpoint; one
   per coin) and `UtxoChain`, which runs the coin's `ChainHandle` isolate
   while its miner or any of its wallets needs it.
