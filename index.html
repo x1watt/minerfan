@@ -27,6 +27,7 @@
   <div class="wrap bar">
     <a class="brand" href="#"><img src="img/icon.svg" alt="" width="32" height="32"> minerfan</a>
     <nav>
+      <a href="#coins">Coins</a>
       <a href="#features">Features</a>
       <a href="#screens">Screenshots</a>
       <a href="#download">Download</a>
@@ -48,7 +49,6 @@
     <div class="cta">
       <a class="btn primary" href="https://github.com/x1watt/minerfan/releases/latest/download/minerfan-android.apk"><svg class="os" aria-hidden="true"><use href="#i-android"/></svg>Download for Android</a>
       <a class="btn primary" href="https://github.com/x1watt/minerfan/releases/latest/download/minerfan-linux-x64.tar.gz"><svg class="os" aria-hidden="true"><use href="#i-linux"/></svg>Download for Linux</a>
-      <a class="btn ghost" href="https://github.com/x1watt/minerfan"><svg class="os" aria-hidden="true"><use href="#i-github"/></svg>Source code</a>
     </div>
     <p class="fine">Version 0.1.0, released under the BSD-3-Clause license.</p>
   </div>
@@ -57,14 +57,41 @@
   </figure>
 </section>
 
+<section id="coins" class="wrap">
+  <h2>Supported coins</h2>
+  <p class="section-lead">These are the coins minerfan can mine in version
+  0.1.0. More will be added in later versions.</p>
+  <div class="coins">
+    <article class="coin">
+      <h3>Monero <span class="ticker">XMR</span></h3>
+      <dl>
+        <dt>Algorithm</dt><dd>RandomX</dd>
+        <dt>Hardware</dt><dd>CPU</dd>
+        <dt>Mining</dt><dd>P2Pool (mini, main or nano sidechain)</dd>
+        <dt>Payouts</dt><dd>Directly from Monero blocks to your wallet</dd>
+      </dl>
+    </article>
+    <article class="coin">
+      <h3>Cryptoescudo <span class="ticker">CESC</span></h3>
+      <dl>
+        <dt>Algorithm</dt><dd>scrypt</dd>
+        <dt>Hardware</dt><dd>GPU (OpenCL)</dd>
+        <dt>Mining</dt><dd>Solo, with an effort limit (25% of the network by default)</dd>
+        <dt>Payouts</dt><dd>The full block reward to your wallet</dd>
+      </dl>
+    </article>
+  </div>
+  <p class="fine">Missing a coin? <a href="#suggest">Suggest it</a>.</p>
+</section>
+
 <section id="features" class="wrap">
   <h2>Features</h2>
   <div class="grid">
     <article class="card">
-      <h3>Coins you can mine now</h3>
-      <p>Monero on the CPU, through a P2Pool node, and Cryptoescudo on the GPU,
-      mined solo. More coins will be added over time, and you can
-      <a href="#suggest">suggest one</a>.</p>
+      <h3>Fair on small networks</h3>
+      <p>For coins with a small network, an effort limit keeps your hashrate
+      to a share of it, 25% by default, so a single fast GPU does not take
+      over the chain.</p>
     </article>
     <article class="card">
       <h3>The nodes run in the app</h3>

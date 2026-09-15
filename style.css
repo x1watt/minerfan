@@ -252,3 +252,41 @@ svg.os { width: 18px; height: 18px; fill: currentColor; flex: none; }
   nav a[href="#screens"], nav a[href="#suggest"] { display: none; }
   .btn { justify-content: center; }
 }
+
+/* supported coins */
+.coins {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 16px;
+  margin-bottom: 14px;
+}
+.coin {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 22px 24px;
+}
+.coin h3 { font-size: 20px; margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }
+.ticker {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--accent);
+  background: var(--accent-soft);
+  border-radius: 6px;
+  padding: 2px 8px;
+  letter-spacing: 0.04em;
+}
+.coin dl {
+  display: grid;
+  grid-template-columns: 96px 1fr;
+  gap: 8px 14px;
+  margin: 0;
+  font-size: 15px;
+}
+.coin dt { color: var(--muted); }
+.coin dd { margin: 0; }
+
+@media (max-width: 560px) {
+  nav a[href="#coins"] { display: none; }
+  .coins { grid-template-columns: 1fr; }
+}
