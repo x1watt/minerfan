@@ -81,9 +81,19 @@ class MinerBadge extends StatelessWidget {
         color: c.primaryContainer,
         border: Border.all(color: miner.running ? c.primary : c.outlineVariant),
       ),
-      child: Text(
-        miner.symbol,
-        style: TextStyle(fontSize: size * 0.28, fontWeight: FontWeight.w700, color: c.onPrimaryContainer),
+      // One line, scaled down when the system text size would not fit it
+      // in the circle (a large font turned "CESC" into "CES" over "C").
+      child: Padding(
+        padding: EdgeInsets.all(size * 0.12),
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Text(
+            miner.symbol,
+            maxLines: 1,
+            softWrap: false,
+            style: TextStyle(fontSize: size * 0.28, fontWeight: FontWeight.w700, color: c.onPrimaryContainer),
+          ),
+        ),
       ),
     );
   }
