@@ -19,6 +19,7 @@ import 'miners/monero_miner.dart';
 import 'miners/utxo_miner.dart';
 import 'mining_service.dart';
 import 'network/private_network.dart';
+import 'moderation/admin.dart';
 import 'network/rooms.dart';
 import 'prices.dart';
 import 'theme.dart';
@@ -214,6 +215,7 @@ class AppController extends ChangeNotifier {
     contacts: contacts,
     joined: () => settings.rooms,
     coins: [for (final m in miners) (m.id, m.name)],
+    admin: ModerationAdmin(wallets: () => wallets, dataDir: dataDir, log: privateNetwork.note),
   )..addListener(notifyListeners);
 
   ChatRoom? roomFor(Miner m) => rooms.roomFor(m.id);

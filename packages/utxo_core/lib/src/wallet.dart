@@ -10,6 +10,7 @@ import 'block.dart';
 import 'bloom.dart';
 import 'bytes.dart';
 import 'node.dart';
+import 'spend_proof.dart';
 import 'peer.dart';
 import 'txbuilder.dart';
 import 'wire.dart';
@@ -57,15 +58,22 @@ class WalletTx {
   final int time; // first seen (seconds)
   final bool coinbase;
 
-  WalletTx(this.txid, this.height, this.received, this.sent, this.time, {this.coinbase = false});
+  /// The public keys its inputs revealed (hex), so a payment to us can be
+  /// matched to a proof signed by its sender (spend_proof.dart).
+  final List<String> inputKeys;
+
+  WalletTx(this.txid, this.height, this.received, this.sent, this.time,
+      {this.coinbase = false, this.inputKeys = const []});
 
   int get net => received - sent;
 
   Map<String, Object?> toJson() =>
-      {'txid': txid, 'height': height, 'received': received, 'sent': sent, 'time': time, 'coinbase': coinbase};
+      {'txid': txid, 'height': height, 'received': received, 'sent': sent, 'time': time, 'coinbase': coinbase,
+        if (inputKeys.isNotEmpty) 'ik': inputKeys};
   static WalletTx fromJson(Map<String, Object?> m) => WalletTx(
       m['txid']! as String, m['height'] as int?, m['received']! as int, m['sent']! as int, m['time']! as int,
-      coinbase: (m['coinbase'] as bool?) ?? false);
+      coinbase: (m['coinbase'] as bool?) ?? false,
+      inputKeys: [for (final k in (m['ik'] as List?) ?? const []) '$k']);
 }
 
 class WalletBalance {
@@ -190,6 +198,13 @@ class SpvWallet {
         }
         // Matched transactions follow their merkleblock; give them a moment.
         await Future<void>.delayed(const Duration(milliseconds: 300));
+        // A peer does not resend a transaction it already announced to us
+        // (BIP 37), so a payment first seen unconfirmed would never arrive
+        // with its block: ask for whatever the proofs named and did not come.
+        if (_expect.isNotEmpty) {
+          peer.send('getdata', Msg.inv([for (final t in _expect.keys) InvItem(InvType.tx, fromHex(t))]));
+          await Future<void>.delayed(const Duration(seconds: 2));
+        }
         scanned = to;
         _save();
       }
@@ -222,6 +237,18 @@ class SpvWallet {
           // ignore
         }
         if (_batchLeft > 0 && --_batchLeft == 0) _batchDone?.complete();
+      case 'inv':
+        // With our filter loaded, a peer announces only transactions that
+        // may concern us: fetch the ones we do not have yet.
+        try {
+          final want = [
+            for (final i in Msg.parseInv(m.payload))
+              if (i.type == InvType.tx && !history.containsKey(toHex(i.hash.reversed.toList()))) i,
+          ];
+          if (want.isNotEmpty) p.send('getdata', Msg.inv(want));
+        } on FormatException {
+          // ignore
+        }
       case 'tx':
         try {
           final tx = Transaction.parse(m.payload);
@@ -269,7 +296,11 @@ class SpvWallet {
     if (old != null) {
       old.height ??= height;
     } else {
-      history[id] = WalletTx(id, height, received, sent, DateTime.now().millisecondsSinceEpoch ~/ 1000, coinbase: tx.isCoinbase);
+      history[id] = WalletTx(id, height, received, sent, DateTime.now().millisecondsSinceEpoch ~/ 1000,
+          coinbase: tx.isCoinbase,
+          inputKeys: received > 0 && sent == 0
+              ? [for (final i in tx.inputs) if (scriptSigPublicKey(i.script) case final k?) toHex(k)]
+              : const []);
       log?.call('wallet: ${tx.isCoinbase ? 'mined' : 'transaction'} $id ${received - sent >= 0 ? '+' : ''}${received - sent}${height == null ? ' (unconfirmed)' : ' at $height'}');
     }
     _save();
@@ -320,7 +351,21 @@ class SpvWallet {
   /// Pays [amount] smallest units to [to]; [accountPrivate] is the account
   /// key with its private part (from the mnemonic). Returns the broadcast
   /// transaction.
-  Transaction send({required Address to, required int amount, required HdKey accountPrivate}) {
+  Transaction send({required Address to, required int amount, required HdKey accountPrivate}) =>
+      _pay(to, amount, accountPrivate).$1;
+
+  /// Pays like [send], and proves it: a signature by the first input's key
+  /// over [message] followed by the txid (spend_proof.dart). Returns the
+  /// transaction, that key's public key and the proof.
+  (Transaction, Uint8List, Uint8List) sendProved(
+      {required Address to, required int amount, required HdKey accountPrivate, required String message}) {
+    final (tx, used) = _pay(to, amount, accountPrivate);
+    final first = used.first;
+    final pub = Secp256k1.publicKey(first.key).encode(compressed: first.compressed);
+    return (tx, pub, inputKeyProof(first.key, utf8.encode('$message${tx.id}')));
+  }
+
+  (Transaction, List<Spendable>) _pay(Address to, int amount, HdKey accountPrivate) {
     if (accountPrivate.neutered().serialize() != account.serialize()) {
       throw ArgumentError('the key is not this wallet\'s account key');
     }
@@ -335,7 +380,7 @@ class SpvWallet {
     for (final u in used) {
       _spent.add(u.outpoint.key);
     }
-    return tx;
+    return (tx, used);
   }
 
   // ---- persistence (public data only: no keys) ----

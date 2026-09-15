@@ -10,6 +10,7 @@ import '../network/rooms.dart';
 import 'chat/chat_palette.dart';
 import 'chat/chat_view.dart';
 import 'contact_edit_page.dart';
+import 'room_moderation.dart';
 
 /// A miner's Chat tab: the coin's room, where people mining the same coin
 /// share how it goes. Opening it joins the room; with the private network
@@ -111,7 +112,7 @@ class _RoomTabState extends State<RoomTab> with AutomaticKeepAliveClientMixin {
     final s = e.store;
     final byCallsign = {for (final c in app.contacts.contacts) c.callsign.toUpperCase(): c};
     _messages = [
-      for (final i in s.visiblePosts())
+      for (final i in e.visiblePosts())
         ChatMessage(
           id: i.id,
           parent: i.replyTo,
@@ -137,9 +138,11 @@ class _RoomTabState extends State<RoomTab> with AutomaticKeepAliveClientMixin {
     }
     if (e == null) return const Center(child: CircularProgressIndicator());
     final coin = widget.miner.name;
+    final mod = e.amModerator;
     return Column(
       children: [
         _StatusLine(app, room, coin),
+        if (room.moderated) ModerationBar(app, room, widget.miner.symbol, _nameOf),
         Expanded(
           child: ChatView(
             messages: _messages,
@@ -156,10 +159,23 @@ class _RoomTabState extends State<RoomTab> with AutomaticKeepAliveClientMixin {
             onHide: (m) => e.hide(m.id),
             onMute: _confirmMute,
             onAddContact: _addContact,
+            onModHide: mod ? (m) => unawaited(e.moderate([('r', m.id), ('hide', 'message')])) : null,
+            onModPin: mod ? (m) => unawaited(e.moderate([('r', m.id), ('pin', 'message')])) : null,
+            onModMute: mod ? (m) => unawaited(muteInRoom(context, e, m.callsign, m.who)) : null,
           ),
         ),
       ],
     );
+  }
+
+  /// A contact's name, else the nickname the callsign signs with, else the
+  /// callsign.
+  String _nameOf(String callsign) {
+    for (final c in app.contacts.contacts) {
+      if (c.callsign.toUpperCase() == callsign) return c.title;
+    }
+    final nick = _room?.store?.identities[callsign]?.nick ?? '';
+    return nick.isEmpty ? callsign : '$nick ($callsign)';
   }
 
   Future<void> _confirmMute(ChatMessage m) async {

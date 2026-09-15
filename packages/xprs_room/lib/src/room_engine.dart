@@ -8,6 +8,7 @@ import 'package:xprs_wire/xprs_wire.dart';
 
 import 'flood_guard.dart';
 import 'member_table.dart';
+import 'moderation.dart';
 import 'room_crypto.dart';
 import 'room_history.dart';
 import 'room_item.dart';
@@ -51,12 +52,26 @@ Future<List<String>> _reply(Runner run, String priv, String self, HistoryAsk ask
     run(() => buildHistoryReply(priv, self, ask, page));
 Future<String> _result(Runner run, String priv, String self, String asker, String askId, int code, String? m) =>
     run(() => signResult(priv, self, asker, askId, code, m: m));
+Future<String> _modAct(Runner run, String priv, String self, String room, List<(String, String)> fields, String? text) =>
+    run(() => signModAct(priv, self, room, fields, text: text));
+
+/// A request to buy the room's moderator rights, as it reached the admin:
+/// who sent it (their identity checked) and what it says.
+class RoomClaim {
+  final String fromB32;
+  final String callsign;
+  final Map<String, Object?> data;
+  RoomClaim(this.fromB32, this.callsign, this.data);
+}
 
 /// How the room is doing, for the screen.
 enum RoomState { offline, searching, alone, connected }
 
 /// What became of a post.
 enum Posted { stored, tooLong }
+
+/// What became of a moderation act.
+enum Moderated { done, notAllowed, tooLong }
 
 /// One room: an XPRS open group (docs XPRS.md 7.3) kept among its members.
 ///
@@ -68,8 +83,12 @@ enum Posted { stored, tooLong }
 ///   fills whatever a push missed. When the room has more live members than
 ///   [pushTo], receivers also pass fresh posts on to [relayTo] others
 ///   (`via:` grows, at most three hops, section 9.1).
-/// - No moderators: posts over the flood limits, from muted callsigns, or
-///   outside the two weeks are neither kept nor passed on.
+/// - Posts over the flood limits, from muted callsigns, or outside the two
+///   weeks are neither kept nor passed on.
+/// - With an [admin] (moderation.dart): the admin grants 30-day moderator
+///   terms, the moderator hides, mutes, pins and restricts posting, and
+///   every member applies the acts it can verify. Without one the room has
+///   no moderators at all.
 ///
 /// Control frames are JSON (`{"v":1,"type":"hello"|"members",...}`); XPRS
 /// frames are wire lines led by the sender's signed `t:identity`.
@@ -91,6 +110,11 @@ class RoomEngine {
   final Duration askTimeout;
   final void Function(String line)? log;
 
+  /// The room's admin (callsign and x-only key hex), or null for a room with
+  /// no moderation.
+  final String? admin;
+  final String? adminKeyHex;
+
   RoomEngine({
     required this.room,
     required this.store,
@@ -107,6 +131,8 @@ class RoomEngine {
     this.pullEvery = const Duration(minutes: 5),
     this.askTimeout = const Duration(seconds: 45),
     this.log,
+    this.admin,
+    this.adminKeyHex,
   })  : members = members ?? MemberTable(),
         budget = budget ?? HistoryBudget(),
         run = run ?? _isolateRunner,
@@ -136,6 +162,139 @@ class RoomEngine {
   /// Fires after anything the screen shows changed.
   Stream<void> get changes => _changes.stream;
 
+  // ---- moderation ----
+
+  bool get moderated => admin != null && adminKeyHex != null;
+  bool get isAdmin => moderated && self == admin;
+  ModerationState? _mod;
+  Timer? _modTimer;
+  final _claims = StreamController<RoomClaim>.broadcast();
+
+  /// Claims to buy the moderator rights that reached us (only as the admin).
+  Stream<RoomClaim> get claims => _claims.stream;
+
+  /// The room's moderation now (replayed from the kept acts, and again
+  /// whenever a term or mute ends).
+  ModerationState get moderation {
+    final m = _mod;
+    if (m != null && (m.nextChangeMs == null || now() < m.nextChangeMs!)) return m;
+    return _mod = ModerationState.replay(store.roster.values, admin ?? '', now());
+  }
+
+  bool get amModerator => moderated && moderation.isModerator(self);
+
+  void _modChanged() {
+    _mod = null;
+    _modTimer?.cancel();
+    final next = moderation.nextChangeMs;
+    if (next != null) {
+      final wait = next - now();
+      _modTimer = Timer(Duration(milliseconds: wait < 0 ? 0 : wait + 50), () {
+        _modChanged();
+        _changes.add(null);
+      });
+    }
+    _changes.add(null);
+  }
+
+  /// The posts to show: the store's (local mutes and hides applied), minus
+  /// what the room's moderation hides or holds.
+  List<RoomItem> visiblePosts() {
+    final posts = store.visiblePosts();
+    if (!moderated) return posts;
+    final m = moderation;
+    return [
+      for (final i in posts)
+        if (m.shows(i.from, i.id, i.tsMs) || (i.from == self && !m.hidden.contains(i.id))) i,
+    ];
+  }
+
+  /// Posts waiting for approval (what the moderator decides on).
+  List<RoomItem> heldPosts() {
+    if (!moderated) return const [];
+    final m = moderation;
+    return [
+      for (final i in store.visiblePosts())
+        if (!m.hidden.contains(i.id) && m.held(i.from, i.tsMs)) i,
+    ];
+  }
+
+  /// Signs and spreads a moderation act of ours ([fields] as in
+  /// moderation.dart, [text] as `m:`).
+  Future<Moderated> moderate(List<(String, String)> fields, {String? text}) async {
+    if (!moderated) return Moderated.notAllowed;
+    final wire = await _modAct(run, privHex, self, room, fields, text);
+    if (wire.isEmpty) return Moderated.tooLong;
+    final p = XprsPacket.parse(wire)!;
+    final a = parseModeration(p, wire, room);
+    if (a == null) return Moderated.notAllowed;
+    final byAdmin = self == admin;
+    final inTerm = moderation.term?.callsign == self;
+    if (!byAdmin && !(inTerm && a.kind != ModKind.term && a.kind != ModKind.endTerm)) return Moderated.notAllowed;
+    if (store.addAct(a)) _modChanged();
+    unawaited(_pushAct(a, null));
+    return Moderated.done;
+  }
+
+  /// As the admin: a 30-day term for [callsign], bought with [paid].
+  Future<Moderated> grantTerm(String callsign, BigInt paid) => moderate([
+        ('grant', callsign),
+        ('role', 'mod'),
+        ('until', xprsNowTs(now() + moderatorTerm.inMilliseconds)),
+        ('paid', '$paid'),
+      ]);
+
+  /// The admin's address, once heard in the room.
+  String? get adminB32 {
+    for (final m in members.recent(now(), within: const Duration(days: 14), liveOnly: false)) {
+      if (m.callsign == admin) return m.b32;
+    }
+    return null;
+  }
+
+  /// Sends a claim to buy the rights to the admin. False while the admin's
+  /// address is unknown or the send failed (the caller tries again later).
+  Future<bool> sendClaim(Map<String, Object?> claim) async {
+    final to = adminB32;
+    if (to == null || myB32 == null) return false;
+    return bearer.send(to, await _control('claim', {'claim': claim}));
+  }
+
+  Future<void> _takeAct(XprsPacket p, String wire, String fromB32) async {
+    final a = parseModeration(p, wire, room);
+    if (a == null || !store.addAct(a)) return;
+    log?.call('room $room: ${a.kind.name} by ${a.signer}${a.target == null ? '' : ' for ${a.target}'}');
+    _modChanged();
+    unawaited(_pushAct(a, fromB32));
+  }
+
+  /// Acts are rare and everyone needs them: send each to every live member
+  /// (up to [pushTo]) but the one it came from.
+  Future<void> _pushAct(ModAct a, String? except) async {
+    if (myB32 == null) return;
+    final targets = MemberTable.sample(members.recent(now()), pushTo, rng, exclude: {?except});
+    if (targets.isEmpty) return;
+    final signer = a.signer == self ? null : store.identities[a.signer]?.wire;
+    final frame = [await _identityWire(), ?signer, a.wire].join('\n');
+    for (final m in targets) {
+      unawaited(bearer.send(m.b32, frame));
+    }
+  }
+
+  /// The kept acts, to someone who just greeted us (a newcomer learns who
+  /// moderates, what is hidden and how the room is set).
+  Future<void> _sendRoster(String b32) async {
+    if (!moderated || store.roster.isEmpty) return;
+    final acts = store.roster.values.toList()..sort((a, b) => a.tsMs.compareTo(b.tsMs));
+    final signers = {for (final a in acts) if (a.signer != self) a.signer};
+    final ids = [for (final c in signers) ?store.identities[c]?.wire];
+    final me = await _identityWire();
+    for (var i = 0; i < acts.length; i += 80) {
+      final chunk = acts.sublist(i, i + 80 > acts.length ? acts.length : i + 80);
+      unawaited(bearer.send(b32, [me, ...ids, for (final a in chunk) a.wire].join('\n')));
+    }
+  }
+
   RoomState get state {
     if (myB32 == null) return RoomState.offline;
     if (members.recent(now()).isNotEmpty) return RoomState.connected;
@@ -158,6 +317,7 @@ class RoomEngine {
   /// Loads the store and remembered members, and listens to the bearer.
   Future<void> start() async {
     await store.load();
+    if (moderated) _modChanged();
     try {
       final f = File(_membersFile);
       if (await f.exists()) members.load(jsonDecode(await f.readAsString()) as List);
@@ -206,9 +366,11 @@ class RoomEngine {
   Future<void> close() async {
     offline();
     await _sub?.cancel();
+    _modTimer?.cancel();
     await _saveMembers();
     await store.flush();
     await _changes.close();
+    await _claims.close();
   }
 
   /// Someone who might be in the room (a contact's I2P address).
@@ -312,6 +474,7 @@ class RoomEngine {
     final lines = f.payload.split('\n').where((l) => l.startsWith('t:')).take(600).toList();
     if (lines.isEmpty) return;
     final known = {for (final i in store.identities.values) i.callsign: i.keyHex};
+    if (moderated) known[admin!] = adminKeyHex!;
     final checked = await _check(run, lines, known);
     for (final id in checked.identities) {
       store.putIdentity(id);
@@ -329,6 +492,9 @@ class RoomEngine {
         item = await _part(p, wire);
       } else if ((p.type == 'message' || p.type == 'reaction') && (p['d'] ?? '').toUpperCase() == room) {
         item = RoomItem(p, [wire]);
+      } else if (p.type == 'moderate' && moderated) {
+        item = null;
+        await _takeAct(p, wire, f.fromB32);
       } else {
         item = null;
         if (p.type == 'command') {
@@ -375,6 +541,7 @@ class RoomEngine {
   /// big enough to need relaying. True when it was new.
   bool _take(RoomItem item, String fromB32) {
     final t = now();
+    if (moderated && moderation.mutedAt(item.from, item.tsMs)) return false;
     final fresh = (t - item.tsMs).abs() < 10 * 60 * 1000;
     if (fresh && item.from != self) {
       final why = flood.check(item.from, reaction: item.isReaction, nowMs: t);
@@ -430,6 +597,10 @@ class RoomEngine {
             if (x.b32 != f.fromB32) x.toJson(),
         ];
         unawaited(bearer.send(f.fromB32, await _control('members', {'members': list})));
+        unawaited(_sendRoster(f.fromB32));
+      case 'claim':
+        final c = m['claim'];
+        if (isAdmin && c is Map) _claims.add(RoomClaim(f.fromB32, who, c.cast<String, Object?>()));
       case 'members':
         for (final e in (m['members'] as List?) ?? const []) {
           if (e is Map) {

@@ -114,3 +114,19 @@ bool verifyJoined(String wire, String keyHex) {
   final p = XprsPacket.parse(wire);
   return p != null && xprsVerify(p, Uint8List.fromList(HEX.decode(keyHex))) == XprsSigState.verified;
 }
+
+/// A moderation act (moderation.dart) for [room], signed by [self]: the
+/// act's own [fields] in order, then [text] as `m:` (always last, section
+/// 4). [tsMs] pins the time (tests). Empty when the packet does not fit.
+String signModAct(String privHex, String self, String room, List<(String, String)> fields,
+    {String? text, int? tsMs}) {
+  final b = StringBuffer('t:moderate f:$self d:$room ts:${xprsNowTs(tsMs)}');
+  for (final (k, v) in fields) {
+    b.write(' $k:$v');
+  }
+  if (text != null && text.trim().isNotEmpty) b.write(' m:${text.trim()}');
+  final p = XprsPacket.parse(b.toString());
+  if (p == null) return '';
+  final signed = xprsSign(p, _scalar(privHex));
+  return signed.fits ? signed.encode() : '';
+}

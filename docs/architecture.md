@@ -159,7 +159,7 @@ several miners:
   - Coin rooms: see below.
 - Coin rooms (`packages/xprs_room`, `lib/network/rooms.dart`, the Chat tab
   of each miner's page): one chat per mined coin, so people mining it can
-  share how it goes. No server and no moderators.
+  share how it goes. No server; a moderator's rights can be bought (below).
   - A room is an XPRS open group (docs XPRS.md 7.3): `t:message f:<callsign>
     d:MONERO ts:.. sig:.. m:..`, replies with `r:`/`root:` (7.4), likes as
     `t:reaction r:<id> add:like` (7.5). Room names are the coin's name in
@@ -206,11 +206,46 @@ several miners:
     `local.json` (muted, hidden, last read); pruned hourly, at most 8 MiB a
     room. Loaded on `Isolate.run`; every signature check and signing runs on
     `Isolate.run` too.
-  - No moderators: "Mute" hides a callsign on this device and stops passing
+  - Local choices: "Mute" hides a callsign on this device and stops passing
     its posts on; "Hide this message" hides one post. A flood guard adapted
     from reticulum-dart's SpamPolicy drops fresh posts over 6 a minute or 60
     an hour per callsign (30 likes a minute), and holds back authors new to
     a busy room.
+  - Bought moderator terms (`packages/xprs_room/lib/src/moderation.dart`,
+    `lib/moderation/`), a minerfan extension of XPRS 10 (closed groups) to
+    open groups:
+    - The rooms have one built-in admin: a station key set at build time
+      (`ModerationConfig`, `ROOM_ADMIN_NPUB`), with an address per coin
+      (`MOD_ADDR_MONERO`, `MOD_ADDR_CRYPTOESCUDO`). While either is empty the
+      room has no moderation.
+    - Buying: the "Become moderator" sheet pays from the app's own wallet and
+      sends the admin a claim `{room, txid, amount, proof}`. The proof is
+      made with the payment's own secret over the callsign and txid: a
+      Schnorr signature with the Monero tx private key, checked against R
+      in the transaction (`tx_key_proof.dart`), or an ECDSA signature by the
+      key of a Cryptoescudo input, checked against the pubkey in its
+      scriptSig (`spend_proof.dart`). Claims are resent every minute for up
+      to 48 hours.
+    - Deciding: the admin's app finds the payment in its own moderation
+      wallet (confirmed, at most 48 hours old, not used before), checks the
+      proof, and takes the amount from the wallet. If it is larger than the
+      running term's (or there is none) it signs
+      `t:moderate grant:<callsign> role:mod until:<+30 days> paid:<amount>`.
+      A larger payment starts a new 30-day term at once; with none for 30
+      days the term ends and the amount to beat is zero again.
+    - Moderator acts (`t:moderate`, valid only inside the signer's term):
+      `r:<id> hide:message` (stays hidden for good), `revoke:<callsign>
+      until:` (mute, at most to the term's end), `r:<id> pin:message`,
+      `set:topic m:<text>`, `set:approval` / `set:open` and `grant:<callsign>`
+      (approve, or lift a mute). Everything but hides ends with the term,
+      by expiry or takeover.
+    - Every member replays the acts it can verify (`ModerationState`), keeps
+      them in `roster.txt` for 31 days, pushes new ones to live members and
+      sends them all to anyone who greets it, so a newcomer learns the room's
+      moderation at once.
+    - Trust: everyone trusts the admin's key for grants; the admin cannot
+      post as anyone else or unsend anything. Payments, grants and the
+      amounts are visible to the room.
   - Joining: a room is joined by opening its Chat tab or by mining the coin
     (`rooms` in `app.json`), and goes online whenever the private network
     runs. On phones, where the network is off by default, the Chat tab

@@ -5,6 +5,7 @@ import 'dart:isolate';
 
 import 'package:xprs_wire/xprs_wire.dart';
 
+import 'moderation.dart';
 import 'room_item.dart';
 
 /// What happened to an item offered to the store.
@@ -21,7 +22,9 @@ enum Admit { stored, duplicate, muted, hidden, tooOld, future, flood, notThisRoo
 /// Files under [dir], JSON lines so the format can grow:
 /// - `YYYY-MM-DD.jsonl` (UTC day of the item's `ts:`): `{"w": [wires]}`;
 /// - `identities.jsonl`: the newest signed `t:identity` per callsign;
-/// - `local.json`: muted callsigns, hidden posts, the last read time.
+/// - `local.json`: muted callsigns, hidden posts, the last read time;
+/// - `roster.txt`: the room's moderation acts, one wire per line, kept
+///   [rosterKeep] (a term lasts 30 days).
 /// Nothing older than [keep] is kept or served: the room's "two weeks".
 class RoomStore {
   final String dir;
@@ -40,6 +43,10 @@ class RoomStore {
   final identities = <String, RoomIdentity>{};
   final muted = <String>{};
   final hidden = <String>{};
+
+  /// Verified moderation acts by full hash (moderation.dart).
+  final roster = <String, ModAct>{};
+  static const rosterKeep = Duration(days: 31);
   int lastReadMs = 0;
   Future<void> _writing = Future.value();
 
@@ -121,6 +128,16 @@ class RoomStore {
     return true;
   }
 
+  /// Keeps a verified moderation act. False when it was known or too old.
+  bool addAct(ModAct a) {
+    if (a.tsMs < now() - rosterKeep.inMilliseconds) return false;
+    final key = NostrCrypto.sha256Hash(xprsSignedText(a.packet));
+    if (roster.containsKey(key)) return false;
+    roster[key] = a;
+    _append('$dir/roster.txt', a.wire);
+    return true;
+  }
+
   void mute(String callsign) {
     muted.add(callsign.toUpperCase());
     _saveLocal();
@@ -157,6 +174,12 @@ class RoomStore {
       }
     }
     _rebuildIndexes();
+    final rosterCut = now() - rosterKeep.inMilliseconds;
+    final before = roster.length;
+    roster.removeWhere((_, a) => a.tsMs < rosterCut);
+    if (roster.length != before) {
+      _replace('$dir/roster.txt', roster.values.map((a) => '${a.wire}\n').join());
+    }
     await _writing;
     final keepDays = {for (final i in _items.values) _day(i.tsMs)};
     final d = Directory(dir);
@@ -210,6 +233,11 @@ class RoomStore {
     muted.addAll(loaded.muted);
     hidden.addAll(loaded.hidden);
     lastReadMs = loaded.lastRead;
+    for (final w in loaded.roster) {
+      final p = XprsPacket.parse(w);
+      final a = p == null ? null : parseModeration(p, w, room);
+      if (a != null) roster[NostrCrypto.sha256Hash(xprsSignedText(p!))] = a;
+    }
   }
 
   void _append(String path, String line) {
@@ -280,13 +308,14 @@ RoomIdentity? identityFromWire(String wire) {
 // A top-level function, so the isolate's closure holds only its arguments.
 Future<_Loaded> _readRoomOff(String dir, int cutoff) => Isolate.run(() => _readRoom(dir, cutoff));
 
-typedef _Loaded = ({List<List<String>> items, List<String> identities, List<String> muted, List<String> hidden, int lastRead});
+typedef _Loaded = ({List<List<String>> items, List<String> identities, List<String> muted, List<String> hidden, int lastRead, List<String> roster});
 
 _Loaded _readRoom(String dir, int cutoff) {
   final items = <List<String>>[];
   final ids = <String>[];
   var muted = <String>[], hidden = <String>[];
   var lastRead = 0;
+  final roster = <String>[];
   final cutDay = xprsNowTs(cutoff).substring(0, 10);
   for (final f in Directory(dir).listSync().whereType<File>()) {
     final name = f.uri.pathSegments.last;
@@ -296,6 +325,8 @@ _Loaded _readRoom(String dir, int cutoff) {
         muted = [for (final c in (m['muted'] as List?) ?? const []) '$c'];
         hidden = [for (final c in (m['hidden'] as List?) ?? const []) '$c'];
         lastRead = (m['lastRead'] as num?)?.toInt() ?? 0;
+      } else if (name == 'roster.txt') {
+        roster.addAll(f.readAsLinesSync().where((l) => l.startsWith('t:')));
       } else if (name.endsWith('.jsonl')) {
         final isIds = name == 'identities.jsonl';
         if (!isIds && name.substring(0, name.length - 6).compareTo(cutDay) < 0) continue;
@@ -311,5 +342,5 @@ _Loaded _readRoom(String dir, int cutoff) {
       }
     } catch (_) {}
   }
-  return (items: items, identities: ids, muted: muted, hidden: hidden, lastRead: lastRead);
+  return (items: items, identities: ids, muted: muted, hidden: hidden, lastRead: lastRead, roster: roster);
 }

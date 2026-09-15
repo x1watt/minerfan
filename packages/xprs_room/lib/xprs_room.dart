@@ -7,6 +7,7 @@ library;
 
 export 'src/flood_guard.dart';
 export 'src/member_table.dart';
+export 'src/moderation.dart';
 export 'src/room_crypto.dart';
 export 'src/room_engine.dart';
 export 'src/room_history.dart';

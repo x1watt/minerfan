@@ -12,4 +12,5 @@ export 'src/randomx/memory.dart' show RxMemoryKind, RxBuffer;
 export 'src/monero/checkpoint.g.dart' show checkpointEndHeight, checkpointHeaders;
 export 'src/wallet/account.dart' show MoneroMnemonic, MoneroAccount;
 export 'src/wallet/node_rpc.dart' show MoneroRpc;
+export 'src/wallet/tx_key_proof.dart';
 export 'src/wallet/wallet_service.dart';

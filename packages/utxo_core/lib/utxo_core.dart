@@ -11,6 +11,7 @@ export 'src/node.dart';
 export 'src/params.dart';
 export 'src/peer.dart';
 export 'src/solo_miner.dart';
+export 'src/spend_proof.dart';
 export 'src/template.dart';
 export 'src/txbuilder.dart';
 export 'src/wallet.dart';

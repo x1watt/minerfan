@@ -8,6 +8,7 @@ import 'package:net_core/net_core.dart';
 import 'package:pow_core/pow_core.dart';
 
 import 'address.dart';
+import 'bytes.dart';
 import 'header_chain.dart';
 import 'node.dart';
 import 'params.dart';
@@ -157,6 +158,15 @@ class ChainHandle {
   Future<String> send(String walletId, String to, int amount, String accountXprv) async =>
       await _request(['send', walletId, to, amount, accountXprv]) as String;
 
+  /// Sends like [send] and proves it (SpvWallet.sendProved): returns the
+  /// txid, the first input's public key and the proof over [message] + txid,
+  /// both hex.
+  Future<(String, String, String)> sendProved(
+      String walletId, String to, int amount, String accountXprv, String message) async {
+    final r = await _request(['sendProved', walletId, to, amount, accountXprv, message]) as List<Object?>;
+    return (r[0]! as String, r[1]! as String, r[2]! as String);
+  }
+
   Future<void> stop() async {
     _commands.send(['stop', -1]);
     await _stopped.future.timeout(const Duration(seconds: 20), onTimeout: () {});
@@ -259,6 +269,14 @@ class _Service {
         final tx = w.send(to: to, amount: a[2]! as int, accountPrivate: key);
         log('sent ${tx.id} to ${node.peerCount} peers');
         return tx.id;
+      case 'sendProved':
+        final w = _wallet(a[0]);
+        final to = Address.parse(a[1]! as String, params) ?? (throw FormatException('not a ${params.name} address'));
+        final key = HdKey.parse(a[3]! as String);
+        if (key == null || !key.isPrivate) throw const FormatException('not an extended private key');
+        final (tx, pub, proof) = w.sendProved(to: to, amount: a[2]! as int, accountPrivate: key, message: a[4]! as String);
+        log('sent ${tx.id} to ${node.peerCount} peers');
+        return [tx.id, toHex(pub), toHex(proof)];
       case 'stop':
         _timer?.cancel();
         await _stopMining();

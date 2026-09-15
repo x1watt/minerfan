@@ -33,7 +33,11 @@ class BuiltTx {
   final int fee;
   final int change;
   final List<Uint8List> keyImages;
-  BuiltTx(this.blob, this.hash, this.fee, this.change, this.keyImages);
+
+  /// The transaction private key r (R = rG is in its extra): what a
+  /// tx-key proof signs with (tx_key_proof.dart). Keep it secret.
+  final Uint8List txKey;
+  BuiltTx(this.blob, this.hash, this.fee, this.change, this.keyImages, this.txKey);
 }
 
 /// Weight for fees (src/cryptonote_basic/cryptonote_format_utils.cpp): the
@@ -135,7 +139,7 @@ BuiltTx buildTransaction({
         throw StateError('signature self-check failed');
       }
     }
-    return BuiltTx(blob, toHex(tx.hash), fee, changeAmount, [for (final i in ins) i.output.keyImage!]);
+    return BuiltTx(blob, toHex(tx.hash), fee, changeAmount, [for (final i in ins) i.output.keyImage!], r);
   }
   throw StateError('the fee did not settle');
 }

@@ -9,6 +9,7 @@ import 'package:xmr_core/src/wallet/outputs.dart';
 import 'package:xmr_core/src/wallet/scanner.dart';
 import 'package:xmr_core/src/wallet/transaction.dart';
 import 'package:xmr_core/src/wallet/tx_builder.dart';
+import 'package:xmr_core/src/wallet/tx_key_proof.dart';
 
 /// Receives two outputs, spends them to another wallet with change back,
 /// and checks the result from both sides (offline: rings of random keys).
@@ -62,5 +63,11 @@ void main() {
     final got = MoneroScanner(friend).scan(tx, built.hash, 10).single;
     expect((got.amount, got.minor), (900000000, 2));
     expect(MoneroScanner(me).scan(tx, built.hash, 10).single.amount, built.change);
+    // The kept tx key is the one behind R in the extra: a proof made with it
+    // verifies against the transaction as the receiver sees it.
+    final pub = tx.txPublicKeys.$1!;
+    expect(scalarMultBase(built.txKey).encode(), pub);
+    final msg = Uint8List.fromList('claim ${built.hash}'.codeUnits);
+    expect(verifyTxKeyProof(pub, msg, txKeyProof(built.txKey, msg)), isTrue);
   });
 }

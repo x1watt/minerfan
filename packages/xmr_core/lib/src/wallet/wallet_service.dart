@@ -47,7 +47,14 @@ class MoneroTxEntry {
   final int fee;
   final bool coinbase;
   final int time;
-  const MoneroTxEntry(this.txid, this.height, this.received, this.spent, this.fee, this.coinbase, this.time);
+
+  /// The transaction's public key R (hex), recorded for incoming payments.
+  final String? txPub;
+
+  /// The transaction private key r (hex), kept for transactions we sent.
+  final String? txKey;
+  const MoneroTxEntry(this.txid, this.height, this.received, this.spent, this.fee, this.coinbase, this.time,
+      {this.txPub, this.txKey});
   int get net => received - spent;
 }
 
@@ -146,8 +153,15 @@ class MoneroWalletHandle {
 
   /// Signs and sends; returns (txid, fee).
   Future<(String, int)> send(String walletId, String address, int amount) async {
+    final (txid, fee, _) = await sendKeyed(walletId, address, amount);
+    return (txid, fee);
+  }
+
+  /// Signs and sends; returns (txid, fee, tx private key hex) for a
+  /// tx-key proof (tx_key_proof.dart).
+  Future<(String, int, String)> sendKeyed(String walletId, String address, int amount) async {
     final r = await _request(['send', walletId, address, amount]) as List<Object?>;
-    return (r[0]! as String, r[1]! as int);
+    return (r[0]! as String, r[1]! as int, r[2]! as String);
   }
 
   Future<void> stop() async {
@@ -425,6 +439,8 @@ class _Service {
       w.mempool.remove(o.id);
       final e = w._entry(txid, height, tx.isCoinbase);
       if (!w.outputs.containsKey(o.id)) e['r'] = (e['r']! as int) + o.amount;
+      final pub = tx.txPublicKeys.$1;
+      if (pub != null) e['R'] = toHex(pub);
       e['h'] = height;
       w.add(o);
       log('wallet ${w.id}: received ${o.amount} in $txid at $height');
@@ -487,7 +503,8 @@ class _Service {
           final history = [
             for (final e in w.history.values)
               MoneroTxEntry(e['txid']! as String, e['h'] as int?, e['r']! as int, e['s']! as int, (e['f'] as int?) ?? 0,
-                  e['cb'] == true, (e['t'] as int?) ?? 0),
+                  e['cb'] == true, (e['t'] as int?) ?? 0,
+                  txPub: e['R'] as String?, txKey: e['k'] as String?),
           ]..sort((a, b) => (b.height ?? 1 << 40).compareTo(a.height ?? 1 << 40));
           return MoneroWalletStatus(
             w.id,
@@ -577,11 +594,12 @@ class _Service {
       final e = w._entry(built.hash, null, false);
       e['s'] = chosen.fold<int>(0, (a, o) => a + o.amount);
       e['f'] = built.fee;
+      e['k'] = toHex(built.txKey);
       for (final o in chosen) {
         o.spentIn = built.hash;
       }
       w.save();
-      return [built.hash, built.fee];
+      return [built.hash, built.fee, toHex(built.txKey)];
     } finally {
       rpc.close();
     }

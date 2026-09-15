@@ -101,6 +101,12 @@ class ChatView extends StatefulWidget {
   final void Function(ChatMessage m) onMute;
   final void Function(ChatMessage m)? onAddContact;
 
+  /// The room's moderator actions, offered in the menu when set: hide a
+  /// post for everyone, mute its author in the room, pin it to the top.
+  final void Function(ChatMessage m)? onModHide;
+  final void Function(ChatMessage m)? onModMute;
+  final void Function(ChatMessage m)? onModPin;
+
   /// What Info says about where messages go and how long they stay.
   final String infoText;
   final String hint;
@@ -115,6 +121,9 @@ class ChatView extends StatefulWidget {
     required this.onHide,
     required this.onMute,
     this.onAddContact,
+    this.onModHide,
+    this.onModMute,
+    this.onModPin,
     this.infoText = '',
     this.hint = 'Message',
     this.emptyText = 'No messages yet',
@@ -656,7 +665,26 @@ class _ChatViewState extends State<ChatView> {
                   title: const Text('Hide this message'),
                   onTap: () => act(() => widget.onHide(m)),
                 ),
-                if (!m.outgoing && !m.isContact && widget.onAddContact != null)
+                if (widget.onModHide != null) ...[
+                const Divider(height: 1),
+                ListTile(
+                    leading: const Icon(Icons.shield_outlined),
+                    title: const Text('Hide for everyone'),
+                    subtitle: const Text('As the room\'s moderator'),
+                    onTap: () => act(() => widget.onModHide!(m))),
+                if (widget.onModPin != null)
+                  ListTile(
+                      leading: const Icon(Icons.push_pin_outlined),
+                      title: const Text('Pin to the top of the room'),
+                      onTap: () => act(() => widget.onModPin!(m))),
+                if (!m.outgoing && widget.onModMute != null)
+                  ListTile(
+                      leading: const Icon(Icons.voice_over_off_outlined),
+                      title: Text('Mute ${m.who} in this room'),
+                      onTap: () => act(() => widget.onModMute!(m))),
+                const Divider(height: 1),
+              ],
+              if (!m.outgoing && !m.isContact && widget.onAddContact != null)
                   ListTile(
                     leading: const Icon(Icons.person_add_alt),
                     title: Text('Add ${m.who} to contacts'),

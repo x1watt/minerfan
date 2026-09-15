@@ -7,6 +7,10 @@ import 'package:i2p/i2p.dart';
 import 'package:xprs_room/xprs_room.dart';
 
 import '../contacts/contact_book.dart';
+import '../moderation/admin.dart';
+import '../moderation/claims.dart';
+import '../moderation/config.dart';
+import '../wallets/wallet.dart';
 import 'private_network.dart';
 
 /// The I2P port coin rooms talk on (XPRS direct packets use 4242).
@@ -89,6 +93,13 @@ class ChatRoom extends ChangeNotifier {
   StreamSubscription<void>? _sub;
   int _unread = 0;
 
+  /// This device's open claims to the room's moderator rights (null when
+  /// the room has no moderation).
+  ClaimBook? claims;
+
+  /// Whether the room's moderator rights can be bought.
+  bool get moderated => engine?.moderated ?? false;
+
   RoomStore? get store => engine?.store;
   int get unread => engine?.store.unread ?? 0;
   RoomState get state => online ? (engine?.state ?? RoomState.offline) : RoomState.offline;
@@ -127,6 +138,9 @@ class RoomService extends ChangeNotifier {
   final PrivateNetwork net;
   final ContactBook contacts;
 
+  /// Decides on claims when this device is the rooms' admin.
+  final ModerationAdmin? admin;
+
   /// Names of the rooms the user is in (the app's settings).
   final Set<String> Function() joined;
   final List<ChatRoom> rooms;
@@ -137,6 +151,7 @@ class RoomService extends ChangeNotifier {
     required this.contacts,
     required this.joined,
     required List<(String minerId, String coin)> coins,
+    this.admin,
   }) : rooms = [
           for (final (id, coin) in coins)
             if (roomNameFor(coin) case final name?) ChatRoom(id, coin, name, net),
@@ -146,6 +161,7 @@ class RoomService extends ChangeNotifier {
   }
 
   bool _ready = false;
+  Timer? _claimTimer;
   int _generation = -1;
   StreamSubscription<I2pMessage>? _sub;
 
@@ -158,6 +174,7 @@ class RoomService extends ChangeNotifier {
     final keys = await net.keys();
     final st = keys.station;
     for (final r in rooms) {
+      final moderated = ModerationConfig.on(r.minerId);
       final e = RoomEngine(
         room: r.name,
         store: RoomStore('$dataDir/rooms/${r.name}', r.name),
@@ -165,10 +182,21 @@ class RoomService extends ChangeNotifier {
         privHex: st.privateKeyHex,
         self: st.callsign,
         log: net.note,
+        admin: moderated ? ModerationConfig.adminCallsign : null,
+        adminKeyHex: moderated ? ModerationConfig.adminKeyHex : null,
       )..nick = contacts.myName;
       await e.start();
       r._attach(e, notifyListeners);
+      if (moderated) {
+        r.claims = ClaimBook('$dataDir/rooms/${r.name}');
+        await r.claims!.load();
+        final a = admin;
+        if (e.isAdmin && a != null) {
+          e.claims.listen((c) async => net.note('rooms: ${r.name}: ${await a.decide(e, c)}'));
+        }
+      }
     }
+    _claimTimer = Timer.periodic(const Duration(minutes: 1), (_) => unawaited(_resendClaims()));
     _ready = true;
     sync();
     notifyListeners();
@@ -199,7 +227,8 @@ class RoomService extends ChangeNotifier {
         _offline(r);
       }
     }
-    final want = joined();
+    // The admin is in every room with moderation: claims reach it there.
+    final want = {...joined(), for (final r in rooms) if (r.engine?.isAdmin ?? false) r.name};
     for (final r in rooms) {
       if (want.contains(r.name)) {
         if (!r.online && !r._joining) unawaited(_join(r));
@@ -285,8 +314,41 @@ class RoomService extends ChangeNotifier {
     }
   }
 
+  /// Buys [r]'s moderator rights: pays [amount] (the coin's smallest unit)
+  /// from [wallet], keeps the claim and sends it to the admin (again every
+  /// minute until a grant answers it).
+  Future<ModClaim> buyModeration(ChatRoom r, Wallet wallet, BigInt amount, {String? password}) async {
+    final e = r.engine, book = r.claims;
+    if (e == null || book == null) throw const ClaimError('This room has no moderator rights to buy.');
+    final c = await payForModeration(wallet: wallet, room: r.name, callsign: e.self, amount: amount, password: password);
+    await book.add(c);
+    net.note('rooms: ${r.name}: paid $amount for the moderator rights in ${c.txid.substring(0, 12)}');
+    unawaited(e.sendClaim(c.toJson()));
+    r.notifyListeners();
+    return c;
+  }
+
+  /// Claims still waiting for a grant go to the admin again; answered,
+  /// outbid or stale ones are dropped.
+  Future<void> _resendClaims() async {
+    final now = DateTime.now().millisecondsSinceEpoch;
+    for (final r in rooms) {
+      final e = r.engine, book = r.claims;
+      if (e == null || book == null || book.claims.isEmpty) continue;
+      final m = e.moderation;
+      await book.removeWhere((c) =>
+          now - c.tsMs > ModerationConfig.claimLife.inMilliseconds ||
+          (m.term?.callsign == e.self && m.term!.startMs >= c.tsMs - 600000) ||
+          (m.term != null && m.term!.callsign != e.self && m.toBeat >= c.amount && m.term!.startMs >= c.tsMs));
+      for (final c in book.claims) {
+        await e.sendClaim(c.toJson());
+      }
+    }
+  }
+
   /// Saves members and stores (the app is quitting).
   Future<void> close() async {
+    _claimTimer?.cancel();
     unawaited(_sub?.cancel());
     for (final r in rooms) {
       await r.engine?.close();

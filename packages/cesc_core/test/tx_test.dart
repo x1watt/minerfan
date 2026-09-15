@@ -61,6 +61,15 @@ void main() {
     final sig = ss.sublist(1, 1 + ss[0]);
     final (r, s) = parseDer(sig.sublist(0, sig.length - 1));
     expect(Secp256k1.verify(Secp256k1.publicKey(key), TxBuilder.legacySighash(tx, 0, me.script), r, s), isTrue);
+    // The spender's public key is in the scriptSig, and a proof signed by
+    // that key over a callsign and the txid verifies against it.
+    final pub = scriptSigPublicKey(ss)!;
+    expect(pub, Secp256k1.publicKey(key).encode());
+    final msg = 'minerfan claim|CRYPTOESCUDO|X1ABCD|${tx.id}'.codeUnits;
+    final proof = inputKeyProof(key, msg);
+    expect(verifyInputKeyProof(pub, msg, proof), isTrue);
+    expect(verifyInputKeyProof(pub, 'minerfan claim|CRYPTOESCUDO|X1EVIL|${tx.id}'.codeUnits, proof), isFalse);
+    expect(verifyInputKeyProof(Secp256k1.publicKey(key + BigInt.one).encode(), msg, proof), isFalse);
     expect(() => TxBuilder.pay(params: p, available: coins, toScript: to.script, amount: 30 * Cryptoescudo.coin, changeScript: me.script),
         throwsA(isA<InsufficientFunds>()));
     // A small payment pays one more base fee (DUST_SOFT_LIMIT).
