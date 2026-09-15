@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>minerfan: mine Monero and Cryptoescudo from one app</title>
-<meta name="description" content="minerfan mines Monero on its own P2Pool node and Cryptoescudo on your GPU, with built-in wallets, contacts and a chat room per coin over I2P. Pure Dart and Flutter, no servers, open source.">
+<title>minerfan | a cryptocurrency miner for Linux and Android</title>
+<meta name="description" content="minerfan is an open source cryptocurrency miner for Linux and Android. It runs the nodes it needs inside the app, pays into wallets on your own device and steps aside when you need the machine.">
 <meta property="og:title" content="minerfan">
-<meta property="og:description" content="Mine Monero on your own P2Pool node and Cryptoescudo on your GPU. Wallets, contacts and coin chat rooms built in. No servers.">
+<meta property="og:description" content="An open source cryptocurrency miner for Linux and Android that pays into wallets on your own device.">
 <meta property="og:image" content="https://minerfan.github.io/img/og.png">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
@@ -17,147 +17,147 @@
 </head>
 <body>
 
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-android" viewBox="0 0 24 24">
+    <path fill-rule="evenodd" d="M2.5 18.5a9.5 8.2 0 0 1 19 0zM8 14.6a1.15 1.15 0 1 0 .01 0zM16 14.6a1.15 1.15 0 1 0 .01 0z"/>
+    <path d="M6.4 8.6 4.6 5.6M17.6 8.6l1.8-3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" fill="none"/>
+  </symbol>
+  <symbol id="i-linux" viewBox="0 0 24 24">
+    <path fill-rule="evenodd" d="M12 1.5c-2.9 0-4.4 2.3-4.4 5.1 0 1.6-.5 2.7-1.5 4.2C4.8 12.7 4 14.6 4 16.6c0 1.9 1 3 2.3 3.6h11.4c1.3-.6 2.3-1.7 2.3-3.6 0-2-.8-3.9-2.1-5.8-1-1.5-1.5-2.6-1.5-4.2 0-2.8-1.5-5.1-4.4-5.1zM12 10.4c-2.1 0-3.6 2.6-3.6 5.3 0 2.2 1.6 3.6 3.6 3.6s3.6-1.4 3.6-3.6c0-2.7-1.5-5.3-3.6-5.3zM10.4 5.4a1 1 0 1 0 .01 0zM13.6 5.4a1 1 0 1 0 .01 0z"/>
+    <path d="M10.6 7.6h2.8L12 9.2z"/>
+    <path d="M3.6 21.3c0-1.1 1.6-1.9 3.3-1.9s2.8.7 2.8 1.6-1.3 1.5-3 1.5-3.1-.2-3.1-1.2zM20.4 21.3c0-1.1-1.6-1.9-3.3-1.9s-2.8.7-2.8 1.6 1.3 1.5 3 1.5 3.1-.2 3.1-1.2z"/>
+  </symbol>
+  <symbol id="i-github" viewBox="0 0 24 24">
+    <path d="M12 1.8a10.2 10.2 0 0 0-3.2 19.9c.5.1.7-.2.7-.5v-1.8c-2.8.6-3.4-1.2-3.4-1.2-.5-1.2-1.1-1.5-1.1-1.5-.9-.6.1-.6.1-.6 1 .1 1.6 1.1 1.6 1.1.9 1.6 2.4 1.1 3 .8.1-.7.4-1.1.6-1.4-2.3-.3-4.6-1.1-4.6-5 0-1.1.4-2 1-2.7-.1-.3-.4-1.3.1-2.7 0 0 .9-.3 2.8 1a9.7 9.7 0 0 1 5.1 0c1.9-1.3 2.8-1 2.8-1 .6 1.4.2 2.4.1 2.7.7.7 1 1.6 1 2.7 0 3.9-2.4 4.7-4.6 5 .4.3.7.9.7 1.9v2.8c0 .3.2.6.7.5A10.2 10.2 0 0 0 12 1.8z"/>
+  </symbol>
+</svg>
+
 <header class="top">
   <div class="wrap bar">
-    <a class="brand" href="#"><img src="img/icon.svg" alt="" width="32" height="32"> minerfan</a>
+    <a class="brand" href="#"><img src="img/icon.svg" alt="" width="30" height="30"> minerfan</a>
     <nav>
-      <a href="#features">Features</a>
       <a href="#screens">Screenshots</a>
       <a href="#download">Download</a>
-      <a href="https://github.com/x1watt/minerfan">Source</a>
+      <a href="#suggest">Suggest a coin</a>
+      <a href="https://github.com/x1watt/minerfan">GitHub</a>
     </nav>
   </div>
 </header>
 
 <main>
 
-<section class="hero wrap">
-  <div class="hero-text">
-    <p class="eyebrow">Open source miner for desktop and Android</p>
-    <h1>Mine Monero and Cryptoescudo<br>from one app.</h1>
-    <p class="lead">minerfan runs its own P2Pool node for Monero and mines
-    Cryptoescudo on your graphics card, both at once. Your coins go straight to
-    your own wallets, which the app creates for you. No pool operator, no
-    account, no servers.</p>
+<section class="intro wrap">
+  <div class="intro-text">
+    <h1>minerfan</h1>
+    <p class="tag">A cryptocurrency miner for Linux and Android.</p>
+    <p>Switch it on and it mines. What it earns goes to a wallet that lives on
+    your own device, and when you need the computer back it gets out of the
+    way. There is no account to create and no pool of ours in the middle: the
+    nodes it needs run inside the app itself.</p>
     <div class="cta">
-      <a class="btn primary" href="https://github.com/x1watt/minerfan/releases/latest/download/minerfan-android.apk">Download for Android</a>
-      <a class="btn primary" href="https://github.com/x1watt/minerfan/releases/latest/download/minerfan-linux-x64.tar.gz">Download for Linux</a>
-      <a class="btn ghost" href="https://github.com/x1watt/minerfan">View the source</a>
+      <a class="btn primary" href="https://github.com/x1watt/minerfan/releases/latest/download/minerfan-android.apk"><svg class="os"><use href="#i-android"/></svg>Download for Android</a>
+      <a class="btn primary" href="https://github.com/x1watt/minerfan/releases/latest/download/minerfan-linux-x64.tar.gz"><svg class="os"><use href="#i-linux"/></svg>Download for Linux</a>
     </div>
-    <p class="fine">Version 0.1.0 | free and open source (BSD-3-Clause)</p>
+    <p class="fine">Version 0.1.0. Free and open source under the BSD-3-Clause license.</p>
   </div>
-  <figure class="hero-shot">
-    <img src="img/dashboard.webp" width="1280" height="800" alt="The minerfan dashboard mining Monero at 397 H/s and Cryptoescudo at 16 kH/s at the same time">
+  <figure class="intro-shot">
+    <img src="img/dashboard.webp" width="1280" height="800" alt="The minerfan dashboard with two miners running at the same time">
   </figure>
 </section>
 
-<section id="features" class="wrap">
-  <h2>What it does</h2>
-  <div class="grid">
-    <article class="card">
-      <h3>Monero on your own P2Pool node</h3>
-      <p>The app runs a P2Pool node (the mini sidechain by default) and its own
-      light peer on the Monero network. When any P2Pool miner finds a block, the
-      block itself pays every wallet with a share in the window, yours included.
-      Nothing to collect, no pool fee.</p>
-    </article>
-    <article class="card">
-      <h3>RandomX, written in Dart</h3>
-      <p>On x86-64 and ARM64 a port of xmrig's RandomX compiler turns each
-      program into machine code at run time; other devices use a plain
-      interpreter. No monerod, no p2pool, no xmrig binaries are bundled or
-      downloaded.</p>
-    </article>
-    <article class="card">
-      <h3>Cryptoescudo on the GPU</h3>
-      <p>Solo mining of Cryptoescudo (CESC) with an OpenCL scrypt kernel, on
-      its own light node. The effort slider keeps you to a fair share of this
-      small network (25% by default). Each block you find pays its whole reward
-      to your address.</p>
-    </article>
-    <article class="card">
-      <h3>Mines around your work</h3>
-      <p>Flexible mining gives a thread back for every core your other programs
-      use, pauses when they fill the CPU and hands memory back when it runs low.
-      Pick a power profile: performance, balanced or eco.</p>
-    </article>
-    <article class="card">
-      <h3>Wallets included</h3>
-      <p>A Monero wallet and a Cryptoescudo wallet are created on first start
-      and the miners pay into them. Receive, send, see the history, write down
-      the recovery words. Keys stay on your device, encrypted.</p>
-    </article>
-    <article class="card">
-      <h3>Contacts you can trust</h3>
-      <p>A contact is a public key with a short callsign, plus whatever you want
-      to keep: wallet addresses, an I2P address, a website. Share your own card
-      as a QR code, signed with your key so nobody can swap the addresses.</p>
-    </article>
-    <article class="card">
-      <h3>A chat room for every coin</h3>
-      <p>People mining the same coin can compare notes in its room. No servers
-      and no moderators: rooms travel over the app's own I2P node, and every
-      member keeps the last two weeks, so newcomers see them too. Mute or hide
-      anything on your own device.</p>
-    </article>
-    <article class="card">
-      <h3>Nothing to install besides the app</h3>
-      <p>The I2P node, the Monero and Cryptoescudo nodes and the wallets are all
-      part of the app, written in Dart and Flutter. It runs on Linux and Android
-      today, and builds for Windows and macOS from the source.</p>
-    </article>
+<section class="wrap narrow">
+  <h2>What you can mine today</h2>
+  <p>Two coins for now, and more on the way. Most of what a miner needs is
+  shared between coins, so a new one is mostly a matter of adding its
+  parameters. If there is one you would like to see, <a href="#suggest">tell us</a>.</p>
+  <div class="table-wrap">
+    <table class="coins">
+      <thead><tr><th>Coin</th><th>Runs on</th><th>How it mines</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><b>Monero</b> <span class="tick">XMR</span></td>
+          <td>CPU</td>
+          <td>Through your own P2Pool node. Every Monero block that P2Pool finds pays the miners with recent shares directly, so there is nothing to withdraw.</td>
+        </tr>
+        <tr>
+          <td><b>Cryptoescudo</b> <span class="tick">CESC</span></td>
+          <td>GPU (OpenCL)</td>
+          <td>Solo, on the app's own light node. You choose how much of the network to take; the default is a quarter.</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
+  <p class="fine">Coins that use different hardware can run side by side, one
+  on the processor and another on the graphics card.</p>
+</section>
+
+<section class="wrap narrow prose">
+  <h2>How it behaves</h2>
+  <p><b>It shares the machine.</b> In the default balanced profile the miner
+  gives up a thread for every core your other programs are using, pauses when
+  they need all of it, and hands back the memory it borrowed when memory runs
+  low. If you would rather it did not hold back, pick Performance; on a laptop
+  or a phone, Eco.</p>
+  <p><b>It keeps your keys.</b> Each coin gets a wallet the first time you
+  start the app, and the miners pay into it. You can receive, send and write
+  down the recovery words. The keys stay on the device, encrypted.</p>
+  <p><b>It knows people.</b> A contact is a public key with a short callsign
+  you can read out loud, plus whatever you want to keep about them. You can
+  hand over your own details as a QR code; it is signed, so nobody can swap the
+  addresses on the way.</p>
+  <p><b>It has a room for each coin.</b> People mining the same coin can talk
+  in a chat that runs over the app's own I2P node. There is no server hosting
+  it and nobody moderating it. Everyone in the room keeps the last two weeks,
+  which is also what a newcomer gets to read, and anything you do not want to
+  see you can mute.</p>
+  <p><b>It is one program.</b> All of the above, the I2P node included, is
+  written in Dart and Flutter and ships inside the app. It does not download or
+  start miners or daemons written by someone else.</p>
 </section>
 
 <section id="screens" class="wrap">
   <h2>Screenshots</h2>
-  <p class="section-lead">Taken from the app while it mined on a desktop with an
-  RTX 3080 and talked to an Android phone over I2P.</p>
+  <p class="section-lead">Taken on a Linux desktop with an RTX 3080 and on an
+  Android phone.</p>
 
   <div class="shots">
     <figure>
-      <img loading="lazy" src="img/monero-overview.webp" width="1280" height="800" alt="Monero miner overview: hashrate, threads, JIT engine, shares and expected time to a share">
-      <figcaption><b>Monero.</b> Hashrate, threads and the RandomX engine, with a
-      plain-language estimate of how often you find a share and how you are paid.</figcaption>
+      <img loading="lazy" src="img/monero-overview.webp" width="1280" height="800" alt="A CPU miner's overview: hashrate, threads, RandomX engine, shares and an estimate of how often a share is found">
+      <figcaption>A CPU miner at work, with a rough idea of how often you will find a share.</figcaption>
     </figure>
     <figure>
-      <img loading="lazy" src="img/monero-pool.webp" width="1280" height="800" alt="P2Pool tab: sidechain mini, tips, peers, synced, share difficulty">
-      <figcaption><b>Your own P2Pool node.</b> The sidechain it follows, its peers
-      and the share difficulty, from the node inside the app.</figcaption>
+      <img loading="lazy" src="img/monero-pool.webp" width="1280" height="800" alt="The P2Pool node inside the app: sidechain, tips, peers and share difficulty">
+      <figcaption>The P2Pool node that runs inside the app.</figcaption>
     </figure>
     <figure>
-      <img loading="lazy" src="img/cesc-overview.webp" width="1280" height="800" alt="Cryptoescudo miner overview: GPU hashrate, duty, network hashrate, blocks found">
-      <figcaption><b>Cryptoescudo.</b> The GPU works only part of the time to stay
-      at your share of the network; blocks found and their rewards are listed.</figcaption>
+      <img loading="lazy" src="img/cesc-overview.webp" width="1280" height="800" alt="A GPU miner's overview: hashrate, duty, network hashrate and blocks found">
+      <figcaption>A GPU miner. It only works part of the time, to stay at the share of the network you chose.</figcaption>
     </figure>
     <figure>
-      <img loading="lazy" src="img/wallets.webp" width="1280" height="800" alt="Wallets tab with a Monero wallet and a Cryptoescudo wallet with mined coins maturing">
-      <figcaption><b>Wallets.</b> Created for you on first start. Mined coins show
-      up here, spendable once the network has confirmed them.</figcaption>
+      <img loading="lazy" src="img/wallets.webp" width="1280" height="800" alt="The wallets, one per coin, with freshly mined coins waiting for confirmations">
+      <figcaption>One wallet per coin. Mined coins wait here until the network confirms them.</figcaption>
     </figure>
     <figure>
-      <img loading="lazy" src="img/card.webp" width="1280" height="800" alt="Your card: a QR code with your callsign, public key and the wallet addresses you chose to share">
-      <figcaption><b>Your card.</b> A signed QR code with your callsign and the
-      addresses you choose to share. Scan someone else's to add them.</figcaption>
+      <img loading="lazy" src="img/card.webp" width="1280" height="800" alt="Your contact card as a QR code, with your callsign, key and shared addresses">
+      <figcaption>Your contact card, ready to be scanned.</figcaption>
     </figure>
     <figure>
-      <img loading="lazy" src="img/settings.webp" width="1280" height="800" alt="Settings: power profiles, start with the computer, theme color, Monero node, private network">
-      <figcaption><b>Settings.</b> Power profiles, start with the computer, theme
-      color, and the app's private network (I2P).</figcaption>
+      <img loading="lazy" src="img/settings.webp" width="1280" height="800" alt="Settings with power profiles, theme colors and the private network">
+      <figcaption>Power profiles, colors and the private network.</figcaption>
     </figure>
   </div>
 
   <div class="chat-pair">
     <figure class="wide">
-      <img loading="lazy" src="img/chat.webp" width="1280" height="800" alt="The Monero chat room on the desktop with messages from the phone">
+      <img loading="lazy" src="img/chat.webp" width="1280" height="800" alt="A coin's chat room on the desktop">
     </figure>
     <figure class="phone">
-      <img loading="lazy" src="img/phone-chat.webp" width="540" height="1230" alt="The same Monero chat room on an Android phone">
+      <img loading="lazy" src="img/phone-chat.webp" width="540" height="1230" alt="The same chat room on an Android phone">
     </figure>
-    <p class="caption"><b>The Monero room, on a desktop and a phone.</b> The phone
-    joined later and pulled the earlier message from the desktop; then both wrote
-    live. The two found each other over the public I2P network, not the local
-    network, and no server was involved.</p>
+    <p class="caption">The same room on the desktop and on the phone. The
+    phone joined later and picked up the earlier message, then both wrote
+    live. They found each other over the public I2P network, not the local
+    one.</p>
   </div>
 </section>
 
@@ -165,72 +165,72 @@
   <h2>Download</h2>
   <div class="downloads">
     <div class="dl">
-      <h3>Android</h3>
-      <p>Android 7.0 or newer. Phones mine Monero on the CPU; some phones can
-      also use their GPU.</p>
-      <a class="btn primary" href="https://github.com/x1watt/minerfan/releases/latest/download/minerfan-android.apk">minerfan-android.apk</a>
-      <ol>
-        <li>Open the file on your phone and allow installs from your browser or
-        file manager when Android asks.</li>
-        <li>minerfan is not on Google Play: store rules do not allow apps that
-        mine on the device.</li>
-      </ol>
+      <h3><svg class="os big"><use href="#i-android"/></svg>Android</h3>
+      <p>Android 7.0 or newer. On phones the CPU coins run on the processor;
+      GPU coins need a phone whose maker lets apps use OpenCL.</p>
+      <a class="btn primary" href="https://github.com/x1watt/minerfan/releases/latest/download/minerfan-android.apk"><svg class="os"><use href="#i-android"/></svg>minerfan-android.apk</a>
+      <p class="fine after">Open the file on the phone and allow the install
+      when Android asks. It is not on Google Play, whose rules do not allow
+      apps that mine on the device.</p>
     </div>
     <div class="dl">
-      <h3>Linux</h3>
-      <p>64-bit PC with GTK 3 (any common desktop). GPU mining uses your
-      graphics driver's OpenCL.</p>
-      <a class="btn primary" href="https://github.com/x1watt/minerfan/releases/latest/download/minerfan-linux-x64.tar.gz">minerfan-linux-x64.tar.gz</a>
+      <h3><svg class="os big"><use href="#i-linux"/></svg>Linux</h3>
+      <p>64-bit PC with GTK 3, which any common desktop has. GPU mining uses
+      the OpenCL driver of your graphics card.</p>
+      <a class="btn primary" href="https://github.com/x1watt/minerfan/releases/latest/download/minerfan-linux-x64.tar.gz"><svg class="os"><use href="#i-linux"/></svg>minerfan-linux-x64.tar.gz</a>
       <pre><code>tar xzf minerfan-linux-x64.tar.gz
 mv minerfan ~/.local/opt/
 ~/.local/opt/minerfan/minerfan</code></pre>
-      <p class="fine">On its first start it adds its own launcher and dock
-      icon.</p>
+      <p class="fine">The first start adds a launcher and a dock icon.</p>
     </div>
   </div>
   <p class="fine center">Checksums and older versions are on the
   <a href="https://github.com/x1watt/minerfan/releases">releases page</a>.
-  Windows and macOS: build from the
+  For Windows and macOS, build it from the
   <a href="https://github.com/x1watt/minerfan">source</a>.</p>
 </section>
 
-<section class="wrap notes">
-  <h2>Good to know</h2>
-  <div class="grid two">
-    <div>
-      <h3>How you get paid</h3>
-      <p>P2Pool has no pool wallet. Every share you find stays in the PPLNS
-      window (about 6 hours on mini). Whenever a P2Pool miner finds a Monero
-      block, its coinbase pays every wallet with shares in the window directly.
-      The Rewards tab lists those payouts.</p>
-    </div>
-    <div>
-      <h3>What is public</h3>
-      <p>Chat messages are public: anyone in a coin's room can read them, and
-      members keep them for 14 days. Your callsign is shown with each message.
-      Mining itself talks only to the Monero, P2Pool and Cryptoescudo
-      networks.</p>
-    </div>
-    <div>
-      <h3>Power and heat</h3>
-      <p>Mining uses a lot of power. It starts only when you switch it on, and
-      the thermal control and power profiles keep laptops and phones from
-      running hot.</p>
-    </div>
-    <div>
-      <h3>Open source</h3>
-      <p>BSD-3-Clause. Ported parts (RandomX, parts of xmrig's JIT, Monero's
-      wallet code and others) keep their permissive licenses, listed in the
-      repository.</p>
-    </div>
-  </div>
+<section id="suggest" class="wrap narrow">
+  <h2>Suggest a coin</h2>
+  <p>We add coins as we go, and requests help us decide which one comes next.
+  To ask for one, open a request on GitHub:</p>
+  <ol class="steps">
+    <li>Sign in to GitHub (a free account is enough).</li>
+    <li>Open the <a href="https://github.com/x1watt/minerfan/issues/new?template=coin-request.yml">coin request form</a>.</li>
+    <li>Fill in the coin's name, ticker and mining algorithm, and links to its
+    website and source code. A block explorer and the size of its network
+    help too.</li>
+    <li>Say why you would like to mine it, and on what hardware.</li>
+  </ol>
+  <p>Before you do, have a look at the
+  <a href="https://github.com/x1watt/minerfan/issues?q=label%3A%22coin+request%22">requests already open</a>;
+  if yours is there, a thumbs-up on it counts as a vote. Coins whose node and
+  mining rules we can write in Dart, under a permissive license, are the
+  easiest to add.</p>
+  <a class="btn ghost" href="https://github.com/x1watt/minerfan/issues/new?template=coin-request.yml"><svg class="os"><use href="#i-github"/></svg>Suggest a coin on GitHub</a>
+</section>
+
+<section class="wrap narrow prose faq">
+  <h2>Questions</h2>
+  <h3>Will it wear out my laptop or phone?</h3>
+  <p>Mining does use a lot of power, which is why it only starts when you
+  switch it on. Thermal control slows it down when the device gets hot, and
+  the Eco profile uses half the threads.</p>
+  <h3>What does the chat show about me?</h3>
+  <p>Messages are public. Anyone in the room can read them, with your callsign
+  next to them, and members keep them for two weeks. Mining itself only talks
+  to the networks of the coins you mine.</p>
+  <h3>Is it open source?</h3>
+  <p>Yes, under the BSD-3-Clause license. The parts ported from other projects
+  keep their own permissive licenses, listed in the
+  <a href="https://github.com/x1watt/minerfan/blob/main/licenses/THIRD_PARTY_NOTICES.md">repository</a>.</p>
 </section>
 
 </main>
 
 <footer class="wrap foot">
-  <img src="img/icon.svg" alt="" width="28" height="28">
-  <span>minerfan | <a href="https://github.com/x1watt/minerfan">github.com/x1watt/minerfan</a> | BSD-3-Clause</span>
+  <img src="img/icon.svg" alt="" width="26" height="26">
+  <span>minerfan, BSD-3-Clause. Source and issues on <a href="https://github.com/x1watt/minerfan">GitHub</a>.</span>
 </footer>
 
 </body>
