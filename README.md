@@ -12,7 +12,7 @@ libraries, no bundled binaries (no monerod, p2pool or xmrig) and no servers.
 **Cryptoescudo** (CESC, a Portuguese Litecoin fork): solo mining on its own
 light node, scrypt on the GPU in our own OpenCL kernel (about 600 kH/s on an
 RTX 3080, where the whole network is about 50 kH/s), held to a chosen share
-of the network by the effort slider (25% by default), and an SPV wallet
+of the network by the effort slider, and an SPV wallet
 that sends and receives with its keys encrypted by your password. It runs
 next to Monero: Monero keeps the CPU, Cryptoescudo takes the GPU.
 
