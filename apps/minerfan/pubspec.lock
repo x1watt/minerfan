@@ -304,7 +304,7 @@ packages:
   i2p:
     dependency: "direct main"
     description:
-      path: "../../../../geogram/i2p-dart"
+      path: "../../../i2p-dart"
       relative: true
     source: path
     version: "0.3.0"

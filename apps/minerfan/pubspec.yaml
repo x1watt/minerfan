@@ -21,7 +21,7 @@ dependencies:
     path: ../../packages/cesc_core
   # Pure-Dart I2P node (BSD-3, geograms/i2p-dart), the local checkout.
   i2p:
-    path: ../../../../geogram/i2p-dart
+    path: ../../../i2p-dart
   # XPRS packets, signatures and sealing, vendored from the xprs app.
   xprs_wire:
     path: ../../packages/xprs_wire
