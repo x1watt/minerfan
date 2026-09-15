@@ -1,0 +1,14 @@
+name: crypto_core
+description: >-
+  Pure Dart cryptography shared by the minerfan coins: hashes (SHA-256,
+  SHA-512, RIPEMD-160), HMAC, PBKDF2, scrypt, secp256k1 ECDSA, Base58Check
+  and HD keys (BIP39, BIP32). No native code and no runtime dependencies.
+version: 0.1.0
+publish_to: none
+
+environment:
+  sdk: ^3.10.0
+
+dev_dependencies:
+  lints: ^6.1.0
+  test: ^1.26.3

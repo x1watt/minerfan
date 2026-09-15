@@ -1,0 +1,20 @@
+name: xprs_room
+description: >-
+  Public chat rooms on XPRS open groups (docs XPRS.md 7.3): the store of the
+  last two weeks, history catch-up (cmd:history, 11.2), members, spreading
+  and flood limits, independent of the bearer. Pure Dart.
+version: 0.1.0
+publish_to: none
+
+environment:
+  sdk: ^3.10.0
+
+dependencies:
+  crypto: ^3.0.3
+  hex: ^0.2.0
+  xprs_wire:
+    path: ../xprs_wire
+
+dev_dependencies:
+  lints: ^6.1.0
+  test: ^1.26.3

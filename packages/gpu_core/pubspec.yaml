@@ -1,0 +1,14 @@
+name: gpu_core
+description: >-
+  GPU compute for the minerfan miners through the system's OpenCL driver
+  (dart:ffi; nothing bundled): devices, programs built from source at run
+  time, buffers and a batched kernel runner.
+version: 0.1.0
+publish_to: none
+
+environment:
+  sdk: ^3.10.0
+
+dev_dependencies:
+  lints: ^6.1.0
+  test: ^1.26.3

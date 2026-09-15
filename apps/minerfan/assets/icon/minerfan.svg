@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#211814"/>
+      <stop offset="1" stop-color="#060607"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#FF7A1A" stop-opacity="0.60"/>
+      <stop offset="0.6" stop-color="#FF6A13" stop-opacity="0.10"/>
+      <stop offset="1" stop-color="#FF6A13" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="blade" x1="60" y1="40" x2="430" y2="-160" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#C83200"/>
+      <stop offset="0.5" stop-color="#FF7A12"/>
+      <stop offset="1" stop-color="#FFC266"/>
+    </linearGradient>
+    <linearGradient id="shroud" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FFB14A"/>
+      <stop offset="0.5" stop-color="#FF6A13"/>
+      <stop offset="1" stop-color="#8A2E00"/>
+    </linearGradient>
+    <linearGradient id="frame" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FF8A2A" stop-opacity="0.8"/>
+      <stop offset="1" stop-color="#FF6A13" stop-opacity="0.15"/>
+    </linearGradient>
+    <g id="b">
+      <path d="M 92 -56 C 185 -205, 350 -262, 428 -160 C 444 -138, 436 -114, 412 -108 C 320 -96, 212 -44, 128 34 C 108 4, 96 -24, 92 -56 Z" fill="url(#blade)"/>
+      <path d="M 100 -66 C 195 -205, 345 -250, 418 -158" fill="none" stroke="#FFFFFF" stroke-opacity="0.45" stroke-width="12" stroke-linecap="round"/>
+    </g>
+    <g id="bm">
+      <path d="M 92 -56 C 185 -205, 350 -262, 428 -160 C 444 -138, 436 -114, 412 -108 C 320 -96, 212 -44, 128 34 C 108 4, 96 -24, 92 -56 Z" fill="#FFFFFF"/>
+    </g>
+  </defs>
+  <rect x="28" y="28" width="968" height="968" rx="230" fill="url(#bg)"/>
+  <circle cx="512" cy="512" r="470" fill="url(#glow)"/>
+  <rect x="40" y="40" width="944" height="944" rx="218" fill="none" stroke="url(#frame)" stroke-width="10"/>
+  <circle cx="150" cy="150" r="30" fill="#17110E" stroke="#FF6A13" stroke-opacity="0.55" stroke-width="7"/><path d="M 136 150 H 164 M 150 136 V 164" stroke="#FF8A2A" stroke-opacity="0.6" stroke-width="7" stroke-linecap="round"/><circle cx="874" cy="150" r="30" fill="#17110E" stroke="#FF6A13" stroke-opacity="0.55" stroke-width="7"/><path d="M 860 150 H 888 M 874 136 V 164" stroke="#FF8A2A" stroke-opacity="0.6" stroke-width="7" stroke-linecap="round"/><circle cx="150" cy="874" r="30" fill="#17110E" stroke="#FF6A13" stroke-opacity="0.55" stroke-width="7"/><path d="M 136 874 H 164 M 150 860 V 888" stroke="#FF8A2A" stroke-opacity="0.6" stroke-width="7" stroke-linecap="round"/><circle cx="874" cy="874" r="30" fill="#17110E" stroke="#FF6A13" stroke-opacity="0.55" stroke-width="7"/><path d="M 860 874 H 888 M 874 860 V 888" stroke="#FF8A2A" stroke-opacity="0.6" stroke-width="7" stroke-linecap="round"/>
+  <g transform="translate(512 512) scale(0.88)"><circle r="452" fill="none" stroke="url(#shroud)" stroke-width="30"/><circle r="433" fill="none" stroke="#000000" stroke-opacity="0.55" stroke-width="8"/><g transform="rotate(-14)"><use xlink:href="#b" transform="rotate(0)"/><use xlink:href="#b" transform="rotate(72)"/><use xlink:href="#b" transform="rotate(144)"/><use xlink:href="#b" transform="rotate(216)"/><use xlink:href="#b" transform="rotate(288)"/></g><circle r="116" fill="#0B0908" stroke="url(#shroud)" stroke-width="14"/><g transform="scale(1.02)">
+  <polygon points="0,-70 61,-35 61,35 0,70 -61,35 -61,-35" fill="#FFB35A"/>
+  <polygon points="0,-70 61,-35 0,0" fill="#FFF3DE"/>
+  <polygon points="61,-35 61,35 0,0" fill="#FFB35A"/>
+  <polygon points="61,35 0,70 0,0" fill="#FF7A1A"/>
+  <polygon points="0,70 -61,35 0,0" fill="#D94400"/>
+  <polygon points="-61,35 -61,-35 0,0" fill="#FF9A3C"/>
+  <polygon points="-61,-35 0,-70 0,0" fill="#FFD9A0"/></g></g></svg>

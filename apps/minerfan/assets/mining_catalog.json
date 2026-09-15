@@ -1,0 +1,171 @@
+{
+  "version": 1,
+  "asOf": "2026-09-14",
+  "about": "What can be mined and with what hardware. Used later to compare which coins are worth mining on a given machine; no evaluation happens yet. Prices come from the sources in each coin's price entry (CoinGecko ids checked on the asOf date).",
+  "hardware": {
+    "cpu": "General purpose processors; the algorithm is designed so CPUs are the efficient choice.",
+    "gpu": "Graphics cards; memory hard or parallel algorithms where GPUs lead.",
+    "disk": "Proof of space or storage: free disk space is the resource, the CPU only proves it.",
+    "other": "Dominated by ASICs or FPGAs; a CPU or GPU earns next to nothing."
+  },
+  "algorithms": [
+    {
+      "id": "randomx",
+      "name": "RandomX",
+      "hardware": "cpu",
+      "alsoRunsOn": ["gpu"],
+      "memory": "2080 MiB dataset in fast mode, 256 MiB cache in light mode, 2 MiB scratchpad per thread",
+      "notes": "Random programs run in a virtual machine tuned to CPUs (large caches, branch prediction, floating point). GPUs run it far less efficiently."
+    },
+    {
+      "id": "verushash",
+      "name": "VerusHash 2.2",
+      "hardware": "cpu",
+      "alsoRunsOn": ["gpu"],
+      "notes": "Built on AES instructions; CPUs with AES-NI lead, FPGAs were made uneconomical by version 2.2."
+    },
+    {
+      "id": "ghostrider",
+      "name": "GhostRider",
+      "hardware": "cpu",
+      "notes": "Chains CryptoNight variants and the x16r hash family in a random order."
+    },
+    {
+      "id": "xelishash-v2",
+      "name": "XelisHash v2",
+      "hardware": "cpu",
+      "alsoRunsOn": ["gpu"],
+      "notes": "Memory hard with a CPU friendly design; GPUs mine it too."
+    },
+    {
+      "id": "kawpow",
+      "name": "KawPow",
+      "hardware": "gpu",
+      "notes": "ProgPoW variant with a DAG that grows over time."
+    },
+    {
+      "id": "firopow",
+      "name": "FiroPoW",
+      "hardware": "gpu",
+      "notes": "ProgPoW variant with a larger DAG."
+    },
+    {
+      "id": "etchash",
+      "name": "Etchash",
+      "hardware": "gpu",
+      "alsoRunsOn": ["other"],
+      "notes": "Ethash with a slower growing DAG. ASICs exist."
+    },
+    {
+      "id": "autolykos2",
+      "name": "Autolykos v2",
+      "hardware": "gpu",
+      "notes": "Memory hard, growing table."
+    },
+    {
+      "id": "octopus",
+      "name": "Octopus",
+      "hardware": "gpu",
+      "notes": "Ethash style DAG algorithm."
+    },
+    {
+      "id": "blake3",
+      "name": "Blake3",
+      "hardware": "gpu",
+      "alsoRunsOn": ["other"],
+      "notes": "Compute bound; ASICs have appeared."
+    },
+    {
+      "id": "dynexsolve",
+      "name": "DynexSolve",
+      "hardware": "gpu",
+      "notes": "Proof of useful work that simulates neuromorphic circuits."
+    },
+    {
+      "id": "kheavyhash",
+      "name": "kHeavyHash",
+      "hardware": "other",
+      "alsoRunsOn": ["gpu"],
+      "notes": "ASICs took over; GPU mining is no longer economical."
+    },
+    {
+      "id": "sha256d",
+      "name": "SHA-256d",
+      "hardware": "other",
+      "notes": "ASICs only in practice."
+    },
+    {
+      "id": "scrypt",
+      "name": "Scrypt",
+      "hardware": "other",
+      "notes": "ASICs only in practice; Dogecoin is merge mined with Litecoin."
+    },
+    {
+      "id": "x11",
+      "name": "X11",
+      "hardware": "other",
+      "notes": "ASICs only in practice."
+    },
+    {
+      "id": "equihash-200-9",
+      "name": "Equihash 200,9",
+      "hardware": "other",
+      "notes": "ASICs only in practice."
+    },
+    {
+      "id": "proof-of-space-time",
+      "name": "Proof of space and time",
+      "hardware": "disk",
+      "notes": "Plots written to disk once; farming reads them. Plotting is faster with a GPU."
+    },
+    {
+      "id": "proof-of-capacity",
+      "name": "Proof of capacity",
+      "hardware": "disk",
+      "notes": "Plotted disk space answers each block's challenge."
+    },
+    {
+      "id": "proof-of-space-time-spacemesh",
+      "name": "Proof of space-time (Spacemesh)",
+      "hardware": "disk",
+      "alsoRunsOn": ["gpu"],
+      "notes": "Space is initialized once, a GPU makes that fast; proofs then read the disk."
+    },
+    {
+      "id": "proof-of-archival-storage",
+      "name": "Proof of archival storage",
+      "hardware": "disk",
+      "notes": "Farmers store pieces of the chain's history."
+    }
+  ],
+  "coins": [
+    {"symbol": "XMR", "name": "Monero", "algorithm": "randomx", "chain": "monero", "minerId": "monero", "walletId": "monero",
+     "price": {"kraken": "XMRUSD", "kucoin": "XMR-USDT", "coingecko": "monero"}},
+    {"symbol": "ZEPH", "name": "Zephyr Protocol", "algorithm": "randomx", "price": {"coingecko": "zephyr-protocol"}},
+    {"symbol": "SAL", "name": "Salvium", "algorithm": "randomx", "price": {"coingecko": "salvium"}},
+    {"symbol": "VRSC", "name": "Verus", "algorithm": "verushash", "price": {"coingecko": "verus-coin"}},
+    {"symbol": "RTM", "name": "Raptoreum", "algorithm": "ghostrider", "price": {"coingecko": "raptoreum"}},
+    {"symbol": "XEL", "name": "Xelis", "algorithm": "xelishash-v2", "price": {"coingecko": "xelis"}},
+    {"symbol": "RVN", "name": "Ravencoin", "algorithm": "kawpow", "price": {"coingecko": "ravencoin"}},
+    {"symbol": "FIRO", "name": "Firo", "algorithm": "firopow", "price": {"coingecko": "zcoin"}},
+    {"symbol": "ETC", "name": "Ethereum Classic", "algorithm": "etchash", "price": {"coingecko": "ethereum-classic"}},
+    {"symbol": "ERG", "name": "Ergo", "algorithm": "autolykos2", "price": {"coingecko": "ergo"}},
+    {"symbol": "CFX", "name": "Conflux", "algorithm": "octopus", "price": {"coingecko": "conflux-token"}},
+    {"symbol": "ALPH", "name": "Alephium", "algorithm": "blake3", "price": {"coingecko": "alephium"}},
+    {"symbol": "DNX", "name": "Dynex", "algorithm": "dynexsolve", "price": {"coingecko": "dynex"}},
+    {"symbol": "KAS", "name": "Kaspa", "algorithm": "kheavyhash", "price": {"coingecko": "kaspa"}},
+    {"symbol": "BTC", "name": "Bitcoin", "algorithm": "sha256d", "price": {"coingecko": "bitcoin"}},
+    {"symbol": "BCH", "name": "Bitcoin Cash", "algorithm": "sha256d", "price": {"coingecko": "bitcoin-cash"}},
+    {"symbol": "LTC", "name": "Litecoin", "algorithm": "scrypt", "price": {"coingecko": "litecoin"}},
+    {"symbol": "CESC", "name": "Cryptoescudo", "algorithm": "scrypt", "chain": "cryptoescudo", "minerId": "cryptoescudo", "walletId": "cryptoescudo",
+     "hardware": "gpu", "notes": "Portuguese Litecoin fork with a tiny network (about 50 kH/s, no ASICs): one GPU is many times the whole network, so the miner caps its share. No exchange lists it, so there is no price.",
+     "price": {}},
+    {"symbol": "DOGE", "name": "Dogecoin", "algorithm": "scrypt", "price": {"coingecko": "dogecoin"}},
+    {"symbol": "DASH", "name": "Dash", "algorithm": "x11", "price": {"coingecko": "dash"}},
+    {"symbol": "ZEC", "name": "Zcash", "algorithm": "equihash-200-9", "price": {"coingecko": "zcash"}},
+    {"symbol": "XCH", "name": "Chia", "algorithm": "proof-of-space-time", "price": {"coingecko": "chia"}},
+    {"symbol": "SIGNA", "name": "Signum", "algorithm": "proof-of-capacity", "price": {"coingecko": "signum"}},
+    {"symbol": "SMH", "name": "Spacemesh", "algorithm": "proof-of-space-time-spacemesh", "price": {"coingecko": "spacemesh"}},
+    {"symbol": "AI3", "name": "Autonomys", "algorithm": "proof-of-archival-storage", "price": {"coingecko": "autonomys-network"}}
+  ]
+}

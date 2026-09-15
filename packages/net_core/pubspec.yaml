@@ -1,0 +1,14 @@
+name: net_core
+description: >-
+  The transport seam shared by the minerfan P2P clients: a Transport that
+  opens byte connections (dart:io sockets by default, replaceable in
+  hosts without sockets).
+version: 0.1.0
+publish_to: none
+
+environment:
+  sdk: ^3.10.0
+
+dev_dependencies:
+  lints: ^6.1.0
+  test: ^1.26.3

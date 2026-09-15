@@ -1,0 +1,18 @@
+# Dart and Flutter
+.dart_tool/
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+.pub-cache/
+coverage/
+
+# IDEs and OS
+.idea/
+*.iml
+.vscode/
+.DS_Store
+*.swp
+
+# Android local files (signing keys stay out, see apps/minerfan/android/.gitignore)
+local.properties
+.gradle/

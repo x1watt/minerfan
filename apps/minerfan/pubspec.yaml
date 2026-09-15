@@ -1,0 +1,50 @@
+name: minerfan
+description: "minerfan: multi-miner app in pure Dart. Monero on its own P2Pool node and Monero light peer, RandomX in Dart; Cryptoescudo solo on the GPU with an SPV wallet."
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: ^3.10.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  xmr_core:
+    path: ../../packages/xmr_core
+  crypto_core:
+    path: ../../packages/crypto_core
+  pow_core:
+    path: ../../packages/pow_core
+  utxo_core:
+    path: ../../packages/utxo_core
+  cesc_core:
+    path: ../../packages/cesc_core
+  # Pure-Dart I2P node (BSD-3, geograms/i2p-dart), the local checkout.
+  i2p:
+    path: ../../../../geogram/i2p-dart
+  # XPRS packets, signatures and sealing, vendored from the xprs app.
+  xprs_wire:
+    path: ../../packages/xprs_wire
+  # Coin chat rooms on XPRS open groups (store, catch-up, members).
+  xprs_room:
+    path: ../../packages/xprs_room
+  hex: ^0.2.0
+  # Contacts: QR codes drawn (qr_flutter) and read in pure Dart (zxing2,
+  # image), frames from the platform camera, images from a file dialog.
+  qr_flutter: ^4.1.0
+  qr: ^3.0.2
+  zxing2: ^0.2.4
+  image: ^4.3.0
+  camera: ^0.12.0+2
+  file_selector: ^1.1.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/mining_catalog.json
+    - assets/icon/minerfan.svg

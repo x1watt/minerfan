@@ -1,0 +1,21 @@
+name: pow_core
+description: >-
+  Proof of work shared by the minerfan coins: header PoW functions (scrypt;
+  room for more), compact targets and difficulty, retarget algorithms
+  (Kimoto Gravity Well and others), CPU and GPU header-nonce miners and the
+  effort controller. No coin constants live here.
+version: 0.1.0
+publish_to: none
+
+environment:
+  sdk: ^3.10.0
+
+dependencies:
+  crypto_core:
+    path: ../crypto_core
+  gpu_core:
+    path: ../gpu_core
+
+dev_dependencies:
+  lints: ^6.1.0
+  test: ^1.26.3

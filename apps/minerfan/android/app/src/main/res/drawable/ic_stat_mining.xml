@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Status bar icon while mining: the minerfan fan. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <group android:rotation="-14" android:pivotX="12" android:pivotY="12">
+        <path android:fillColor="#FFFFFFFF" android:pathData="M14.15,10.69C16.32,7.22,20.17,5.89,21.99,8.27C22.36,8.78,22.17,9.34,21.61,9.48C19.47,9.76,16.95,10.97,14.99,12.79C14.52,12.09,14.24,11.44,14.15,10.69Z" />
+    </group>
+    <group android:rotation="58" android:pivotX="12" android:pivotY="12">
+        <path android:fillColor="#FFFFFFFF" android:pathData="M14.15,10.69C16.32,7.22,20.17,5.89,21.99,8.27C22.36,8.78,22.17,9.34,21.61,9.48C19.47,9.76,16.95,10.97,14.99,12.79C14.52,12.09,14.24,11.44,14.15,10.69Z" />
+    </group>
+    <group android:rotation="130" android:pivotX="12" android:pivotY="12">
+        <path android:fillColor="#FFFFFFFF" android:pathData="M14.15,10.69C16.32,7.22,20.17,5.89,21.99,8.27C22.36,8.78,22.17,9.34,21.61,9.48C19.47,9.76,16.95,10.97,14.99,12.79C14.52,12.09,14.24,11.44,14.15,10.69Z" />
+    </group>
+    <group android:rotation="202" android:pivotX="12" android:pivotY="12">
+        <path android:fillColor="#FFFFFFFF" android:pathData="M14.15,10.69C16.32,7.22,20.17,5.89,21.99,8.27C22.36,8.78,22.17,9.34,21.61,9.48C19.47,9.76,16.95,10.97,14.99,12.79C14.52,12.09,14.24,11.44,14.15,10.69Z" />
+    </group>
+    <group android:rotation="274" android:pivotX="12" android:pivotY="12">
+        <path android:fillColor="#FFFFFFFF" android:pathData="M14.15,10.69C16.32,7.22,20.17,5.89,21.99,8.27C22.36,8.78,22.17,9.34,21.61,9.48C19.47,9.76,16.95,10.97,14.99,12.79C14.52,12.09,14.24,11.44,14.15,10.69Z" />
+    </group>
+    <path android:fillColor="#FFFFFFFF"
+        android:pathData="M12,9.2a2.8,2.8 0,1 1,0 5.6a2.8,2.8 0,1 1,0 -5.6z" />
+</vector>

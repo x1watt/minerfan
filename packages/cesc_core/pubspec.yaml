@@ -1,0 +1,24 @@
+name: cesc_core
+description: >-
+  Cryptoescudo (CESC) for minerfan: chain parameters, reward schedule,
+  retarget parameters, seeds and the header checkpoint. Everything else comes
+  from the shared packages.
+version: 0.1.0
+publish_to: none
+
+environment:
+  sdk: ^3.10.0
+
+dependencies:
+  crypto_core:
+    path: ../crypto_core
+  net_core:
+    path: ../net_core
+  pow_core:
+    path: ../pow_core
+  utxo_core:
+    path: ../utxo_core
+
+dev_dependencies:
+  lints: ^6.1.0
+  test: ^1.26.3
