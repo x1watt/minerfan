@@ -1,0 +1,69 @@
+name: Coin request
+description: Suggest a coin for minerfan to mine
+title: "Coin request: "
+labels: ["coin request"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting a coin. Please check the [open requests](https://github.com/x1watt/minerfan/issues?q=label%3A%22coin+request%22) first; if the coin is already there, a thumbs-up on that issue counts as a vote.
+  - type: input
+    id: name
+    attributes:
+      label: Coin name and ticker
+      placeholder: e.g. Monero (XMR)
+    validations:
+      required: true
+  - type: input
+    id: algorithm
+    attributes:
+      label: Mining algorithm
+      placeholder: e.g. RandomX, scrypt, SHA-256d, Ethash
+    validations:
+      required: true
+  - type: dropdown
+    id: hardware
+    attributes:
+      label: Hardware you would mine it on
+      multiple: true
+      options:
+        - CPU
+        - GPU
+        - Phone
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: website
+    attributes:
+      label: Website
+      placeholder: https://
+    validations:
+      required: true
+  - type: input
+    id: source
+    attributes:
+      label: Source code of the node
+      description: Link to the repository, and its license if you know it.
+      placeholder: https://github.com/...
+    validations:
+      required: true
+  - type: input
+    id: explorer
+    attributes:
+      label: Block explorer or network statistics
+      description: Optional. Helps us see the network size and block times.
+  - type: dropdown
+    id: pool
+    attributes:
+      label: How is it mined?
+      options:
+        - Solo mining
+        - Through a decentralized pool (like P2Pool)
+        - Through pools
+        - Not sure
+  - type: textarea
+    id: why
+    attributes:
+      label: Why this coin?
+      description: What makes it worth mining with minerfan, and anything else we should know.
