@@ -9,8 +9,9 @@ import 'package:xprs_wire/xprs_wire.dart';
 ///     --dart-define=MOD_ADDR_MONERO=4... --dart-define=MOD_ADDR_CRYPTOESCUDO=C...
 /// While the admin or a room's address is empty, that room has no moderation.
 abstract final class ModerationConfig {
-  /// The rooms' admin (X1WATT). Empty until the key is published.
-  static const _adminNpub = String.fromEnvironment('ROOM_ADMIN_NPUB');
+  /// The rooms' admin: X1WATT.
+  static const _adminNpub = String.fromEnvironment('ROOM_ADMIN_NPUB',
+      defaultValue: 'npub1watt585dqju7agda06973etnhyad6n9l6wy2heamr0mxw0nmgl5sdrsnac');
 
   static const _addresses = {
     'monero': String.fromEnvironment('MOD_ADDR_MONERO'),
