@@ -1,0 +1,66 @@
+name: Windows build
+
+# Builds the Windows app, which cannot be cross compiled from Linux, and
+# attaches it to the release of the tag it was asked for.
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag to build and upload to (for example v0.2.1)'
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: The tag to build
+        id: pick
+        shell: bash
+        run: echo "tag=${{ github.event.inputs.tag || github.ref_name }}" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.pick.outputs.tag }}
+          path: minerfan
+
+      # minerfan uses the I2P node from the checkout next to it.
+      - uses: actions/checkout@v4
+        with:
+          repository: x1watt/i2p-dart
+          ref: release-0.3.0
+          path: i2p-dart
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.38.1
+          channel: stable
+
+      - name: Build
+        working-directory: minerfan/apps/minerfan
+        run: |
+          flutter config --enable-windows-desktop
+          flutter build windows --release
+
+      - name: Pack
+        shell: pwsh
+        working-directory: minerfan/apps/minerfan
+        run: |
+          $out = "build/windows/x64/runner/Release"
+          Compress-Archive -Path "$out/*" -DestinationPath "$env:GITHUB_WORKSPACE/minerfan-windows-x64.zip"
+          (Get-FileHash "$env:GITHUB_WORKSPACE/minerfan-windows-x64.zip" -Algorithm SHA256).Hash.ToLower() `
+            + "  minerfan-windows-x64.zip" | Out-File -Encoding ascii "$env:GITHUB_WORKSPACE/minerfan-windows-x64.zip.sha256"
+
+      - name: Attach to the release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release upload "${{ steps.pick.outputs.tag }}" \
+            "$GITHUB_WORKSPACE/minerfan-windows-x64.zip" \
+            "$GITHUB_WORKSPACE/minerfan-windows-x64.zip.sha256" \
+            --repo "${{ github.repository }}" --clobber
