@@ -7,6 +7,7 @@ import 'package:utxo_core/utxo_core.dart';
 import '../app_controller.dart';
 import '../format.dart';
 import '../wallets/utxo_wallet.dart';
+import 'chat_button.dart';
 import 'contact_picker.dart';
 import 'wallet_keys_ui.dart';
 
@@ -41,6 +42,7 @@ class UtxoWalletPage extends StatelessWidget {
                 ],
               ),
               actions: [
+                ChatButton(app, w.chain, dense: true),
                 PopupMenuButton<String>(
                   onSelected: (v) {
                     if (v == 'phrase') showRecoveryPhrase(context, app, w);

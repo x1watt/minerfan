@@ -6,6 +6,7 @@ import '../miners/miner.dart';
 import '../miners/monero_miner.dart';
 import '../miners/utxo_miner.dart';
 import '../devices.dart';
+import 'chat_button.dart';
 import 'contacts_page.dart';
 import 'miners_page.dart';
 import 'widgets.dart';
@@ -151,16 +152,7 @@ class _MinerCard extends StatelessWidget {
                       ],
                     ),
                   ),
-                  if (app.roomFor(m) case final room? when room.engine != null)
-                    IconButton(
-                      tooltip: 'Chat room',
-                      onPressed: () => openMiner(context, app, m, chat: true),
-                      icon: Badge(
-                        isLabelVisible: room.unread > 0,
-                        label: Text('${room.unread}'),
-                        child: const Icon(Icons.forum_outlined),
-                      ),
-                    ),
+                  ChatButton(app, m.id),
                   MinerSwitch(app, m),
                 ],
               ),

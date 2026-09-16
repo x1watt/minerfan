@@ -5,6 +5,7 @@ import '../format.dart';
 import '../miners/miner.dart';
 import '../miners/monero_miner.dart';
 import '../miners/utxo_miner.dart';
+import 'chat_button.dart';
 import 'monero_page.dart';
 import 'utxo_miner_page.dart';
 import 'widgets.dart';
@@ -47,7 +48,10 @@ class MinersPage extends StatelessWidget {
                   if (m.running) hashrate(m.hashrate),
                 ].join('  ·  '),
               ),
-              trailing: const Icon(Icons.chevron_right),
+              trailing: Row(mainAxisSize: MainAxisSize.min, children: [
+                ChatButton(app, m.id, dense: true),
+                const Icon(Icons.chevron_right),
+              ]),
               onTap: () => openMiner(context, app, m),
             ),
           ),

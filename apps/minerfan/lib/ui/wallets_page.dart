@@ -11,6 +11,7 @@ import '../wallets/monero_wallet.dart';
 import '../wallets/utxo_wallet.dart';
 import '../wallets/wallet.dart';
 import 'add_wallet_page.dart';
+import 'chat_button.dart';
 import 'contacts_page.dart';
 import 'monero_wallet_page.dart';
 import 'utxo_wallet_page.dart';
@@ -91,11 +92,16 @@ class _WalletsPageState extends State<WalletsPage> {
           for (final chain in {for (final w in app.wallets) w.chain}) ...[
           Padding(
             padding: const EdgeInsets.fromLTRB(4, 12, 4, 4),
-            child: Text(
-              '${app.wallets.firstWhere((w) => w.chain == chain).chainName}  ·  '
-              '${app.wallets.where((w) => w.chain == chain).length}',
-              style: t.textTheme.titleSmall?.copyWith(color: t.colorScheme.primary),
-            ),
+            child: Row(children: [
+              Expanded(
+                child: Text(
+                  '${app.wallets.firstWhere((w) => w.chain == chain).chainName}  ·  '
+                  '${app.wallets.where((w) => w.chain == chain).length}',
+                  style: t.textTheme.titleSmall?.copyWith(color: t.colorScheme.primary),
+                ),
+              ),
+              ChatButton(app, chain, dense: true),
+            ]),
           ),
           for (final w in app.wallets.where((w) => w.chain == chain)) _WalletCard(app, w, _prices),
         ],

@@ -9,6 +9,7 @@ import '../app_controller.dart';
 import '../format.dart';
 import '../wallets/keyed_wallet.dart';
 import '../wallets/monero_wallet.dart';
+import 'chat_button.dart';
 import 'contact_picker.dart';
 import 'wallet_keys_ui.dart';
 
@@ -43,6 +44,7 @@ class MoneroWalletPage extends StatelessWidget {
                 ],
               ),
               actions: [
+                ChatButton(app, w.chain, dense: true),
                 PopupMenuButton<String>(
                   onSelected: (v) {
                     if (v == 'phrase') showRecoveryPhrase(context, app, w);
