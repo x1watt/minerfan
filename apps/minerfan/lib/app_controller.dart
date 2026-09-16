@@ -20,6 +20,7 @@ import 'miners/utxo_miner.dart';
 import 'mining_service.dart';
 import 'network/private_network.dart';
 import 'moderation/admin.dart';
+import 'moderation/config.dart';
 import 'network/rooms.dart';
 import 'prices.dart';
 import 'theme.dart';
@@ -382,6 +383,9 @@ class AppController extends ChangeNotifier {
     await contacts.load();
     unawaited(privateNetwork.keys().then((_) {}, onError: (Object e) => debugPrint('network keys: $e')));
     _loaded = true;
+    // The rooms' admin and addresses, from this profile's file when it has
+    // one, before any room opens.
+    if (await ModerationConfig.loadProfile() case final note?) privateNetwork.note(note);
     unawaited(rooms.start().catchError((Object e) => debugPrint('rooms: $e')));
     Desktop.integrate(startWithComputer: settings.startWithComputer);
     unawaited(Desktop.setCloseAction(settings.closeAction.name));

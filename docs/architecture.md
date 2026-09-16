@@ -214,10 +214,16 @@ several miners:
   - Bought moderator terms (`packages/xprs_room/lib/src/moderation.dart`,
     `lib/moderation/`), a minerfan extension of XPRS 10 (closed groups) to
     open groups:
-    - The rooms have one built-in admin: a station key set at build time
-      (`ModerationConfig`, `ROOM_ADMIN_NPUB`), with an address per coin
-      (`MOD_ADDR_MONERO`, `MOD_ADDR_CRYPTOESCUDO`). While either is empty the
-      room has no moderation.
+    - The rooms have one built-in admin: a station key (`ModerationConfig`,
+      overridable at build time with `ROOM_ADMIN_NPUB`), with an address per
+      coin (`MOD_ADDR_MONERO`, `MOD_ADDR_CRYPTOESCUDO`). While either is
+      empty the room has no moderation.
+    - The same three live in the user's profile, outside the app's data
+      folder: `~/.config/minerfan/rooms.json` (`$MINERFAN_ROOMS`, or the
+      platform's equivalent), written on the first start and read before any
+      room opens. What the file says wins, so a device keeps the settings it
+      was given when the app is replaced by another build; a key the file
+      leaves out stays as built in.
     - Buying: the "Become moderator" sheet pays from the app's own wallet and
       sends the admin a claim `{room, txid, amount, proof}`. The proof is
       made with the payment's own secret over the callsign and txid: a
