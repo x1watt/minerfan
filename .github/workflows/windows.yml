@@ -16,7 +16,8 @@ permissions:
 
 jobs:
   build:
-    runs-on: windows-latest
+    # windows-2022 carries the Visual Studio C++ workload flutter needs.
+    runs-on: windows-2022
     steps:
       - name: The tag to build
         id: pick
@@ -39,6 +40,9 @@ jobs:
         with:
           flutter-version: 3.38.1
           channel: stable
+
+      - name: Toolchain
+        run: flutter doctor -v
 
       - name: Build
         working-directory: minerfan/apps/minerfan
