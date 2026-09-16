@@ -239,10 +239,31 @@ several miners:
       `set:topic m:<text>`, `set:approval` / `set:open` and `grant:<callsign>`
       (approve, or lift a mute). Everything but hides ends with the term,
       by expiry or takeover.
+    - The act format and the replay rules are XPRS 10's, not new ones: 10.1
+      to 10.3 for `t:moderate` with `grant:`/`revoke:`/`role:mod`/`until:`/
+      `r: hide:message`, and 10.4 for authority (judged at the act's `ts:`,
+      newest wins per signer, ties go to the smaller identifier, an act dated
+      ahead of the clock is dropped). minerfan adds exactly two things, both
+      because the game asks for them: `paid:<amount>` on a grant, and the
+      room settings a moderator may change (`set:topic m:`,
+      `set:approval`/`set:open`, `r:<id> pin:message`, `set:unpin`).
     - Every member replays the acts it can verify (`ModerationState`), keeps
       them in `roster.txt` for 31 days, pushes new ones to live members and
       sends them all to anyone who greets it, so a newcomer learns the room's
-      moderation at once.
+      moderation at once. Following 10.8, the running term's grant also goes
+      out again every hour (jittered), which reaches a member that was
+      offline when the term changed; roster answers are bounded (4 an hour
+      per asker, 60 in all) and go only to the station that asked (29.4).
+    - Who is the admin: whichever install signs with the admin account. The
+      station key is a NOSTR identity, so Settings can show its nsec ("Back
+      up this account") and take another one ("Use another account",
+      `NetworkKeys.importStation`, which keeps the old key file aside); the
+      matching npub is what the site publishes. On that device a "Rooms
+      admin" section (`lib/ui/admin_rooms.dart`) shows each room's receiving
+      address, whether a wallet here holds it, who moderates and what was
+      decided lately. The admin has to be running to answer a claim; while it
+      is off, terms already granted keep running. An old phone left mining is
+      enough.
     - Trust: everyone trusts the admin's key for grants; the admin cannot
       post as anyone else or unsend anything. Payments, grants and the
       amounts are visible to the room.

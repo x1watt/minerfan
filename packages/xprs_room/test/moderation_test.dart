@@ -112,6 +112,25 @@ void main() {
     expect(s.mutedAt(bob.call, t0 + day + 1000), isTrue, reason: 'what he wrote while muted stays muted');
   });
 
+  test('an old act sent again changes nothing', () {
+    final aliceTerm = term(admin, alice, t0, 1000);
+    final aliceMute = act(alice, t0 + day, [('revoke', eve.call), ('until', xprsNowTs(t0 + 20 * day))]);
+    final bobTerm = term(admin, bob, t0 + 10 * day, 2000);
+    final acts = [aliceTerm, aliceMute, bobTerm];
+    final s = at(acts, t0 + 15 * day);
+    expect(s.moderator, bob.call);
+    expect(s.muted, isEmpty);
+
+    // The same wires again, whoever relays them: authority is read at each
+    // act's ts:, so the picture at t0 + 15 days is the same one.
+    final replayed = at([...acts, aliceTerm, aliceMute, bobTerm, aliceTerm], t0 + 15 * day);
+    expect(replayed.moderator, bob.call);
+    expect(replayed.toBeat, s.toBeat);
+    expect(replayed.muted, isEmpty);
+    expect(replayed.term!.startMs, s.term!.startMs);
+    expect(replayed.term!.endMs, s.term!.endMs);
+  });
+
   test('the admin can end a term; acts from the future are ignored', () {
     final acts = [term(admin, alice, t0, 1000), act(admin, t0 + 3 * day, [('revoke', alice.call)])];
     expect(at(acts, t0 + 4 * day).moderator, isNull);

@@ -108,6 +108,10 @@ class RoomEngine {
 
   /// How long to wait for a history answer before asking someone else.
   final Duration askTimeout;
+
+  /// How often the running term's grant goes out again (XPRS.md 10.8: any
+  /// member may rebroadcast the grants it holds), jittered like the pulls.
+  final Duration reAirEvery;
   final void Function(String line)? log;
 
   /// The room's admin (callsign and x-only key hex), or null for a room with
@@ -123,6 +127,7 @@ class RoomEngine {
     required this.self,
     MemberTable? members,
     HistoryBudget? budget,
+    HistoryBudget? rosterBudget,
     Runner? run,
     int Function()? now,
     Random? rng,
@@ -130,17 +135,23 @@ class RoomEngine {
     this.relayTo = 2,
     this.pullEvery = const Duration(minutes: 5),
     this.askTimeout = const Duration(seconds: 45),
+    this.reAirEvery = const Duration(hours: 1),
     this.log,
     this.admin,
     this.adminKeyHex,
   })  : members = members ?? MemberTable(),
         budget = budget ?? HistoryBudget(),
+        rosterBudget = rosterBudget ?? HistoryBudget(perAsker: 4, total: 60),
         run = run ?? _isolateRunner,
         now = now ?? (() => DateTime.now().millisecondsSinceEpoch),
         rng = rng ?? Random.secure();
 
   final flood = FloodGuard();
   final HistoryBudget budget;
+
+  /// What we will answer in roster acts per hour, per asker and in all
+  /// (XPRS.md 10.8 with 29.4: bounded, and only to the station that asked).
+  final HistoryBudget rosterBudget;
   final _greeted = <String, int>{};
   final _parts = XprsPartTable();
   final _partWires = <String, Map<int, String>>{};
@@ -282,9 +293,15 @@ class RoomEngine {
   }
 
   /// The kept acts, to someone who just greeted us (a newcomer learns who
-  /// moderates, what is hidden and how the room is set).
-  Future<void> _sendRoster(String b32) async {
+  /// moderates, what is hidden and how the room is set). The answer goes to
+  /// the station that asked and to nobody else, and only while [who] is
+  /// within the roster budget.
+  Future<void> _sendRoster(String b32, String who) async {
     if (!moderated || store.roster.isEmpty) return;
+    if (!rosterBudget.allow(who, now())) {
+      log?.call('room $room: no roster for $who, asked too often');
+      return;
+    }
     final acts = store.roster.values.toList()..sort((a, b) => a.tsMs.compareTo(b.tsMs));
     final signers = {for (final a in acts) if (a.signer != self) a.signer};
     final ids = [for (final c in signers) ?store.identities[c]?.wire];
@@ -293,6 +310,17 @@ class RoomEngine {
       final chunk = acts.sublist(i, i + 80 > acts.length ? acts.length : i + 80);
       unawaited(bearer.send(b32, [me, ...ids, for (final a in chunk) a.wire].join('\n')));
     }
+  }
+
+  /// Sends the grant of the term running now out again, so a member that was
+  /// offline when it was signed learns who moderates without waiting for a
+  /// greeting. A rebroadcast is a relay, not a new act (XPRS.md 10.8): the
+  /// wire goes as it was signed, and whoever already holds it keeps it once.
+  Future<void> _reAir() async {
+    if (!moderated || myB32 == null) return;
+    final t = moderation.term;
+    if (t == null) return;
+    await _pushAct(t.grant, null);
   }
 
   RoomState get state {
@@ -342,7 +370,8 @@ class RoomEngine {
       ..add(Timer.periodic(pullEvery * (1 + rng.nextDouble() / 5), (_) => unawaited(_gapFill())))
       ..add(Timer.periodic(const Duration(minutes: 15), (_) => unawaited(_greet(meeting: 1, known: 2))))
       ..add(Timer.periodic(askTimeout ~/ 3, (_) => _checkPending()))
-      ..add(Timer.periodic(const Duration(hours: 1), (_) => unawaited(_housekeeping())));
+      ..add(Timer.periodic(const Duration(hours: 1), (_) => unawaited(_housekeeping())))
+      ..add(Timer.periodic(reAirEvery * (1 + rng.nextDouble() / 5), (_) => unawaited(_reAir())));
     unawaited(_greet(meeting: meetingPoints.length, known: 5));
     // A member that came up at the same moment has not published its
     // meeting address yet: greet again soon while nobody answered.
@@ -597,7 +626,7 @@ class RoomEngine {
             if (x.b32 != f.fromB32) x.toJson(),
         ];
         unawaited(bearer.send(f.fromB32, await _control('members', {'members': list})));
-        unawaited(_sendRoster(f.fromB32));
+        unawaited(_sendRoster(f.fromB32, who));
       case 'claim':
         final c = m['claim'];
         if (isAdmin && c is Map) _claims.add(RoomClaim(f.fromB32, who, c.cast<String, Object?>()));

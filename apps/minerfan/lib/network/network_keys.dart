@@ -21,6 +21,10 @@ class XprsStation {
   BigInt get scalar => BigInt.parse(privateKeyHex, radix: 16);
   Uint8List get publicKey => Uint8List.fromList(HEX.decode(publicKeyHex));
   String get npub => NostrCrypto.encodeNpub(publicKeyHex);
+
+  /// The account's secret, as NOSTR writes it. Whoever holds it can sign as
+  /// this account: only ever show it to the person using the device.
+  String get nsec => NostrCrypto.encodeNsec(privateKeyHex);
   String get callsign => 'X1${NostrCrypto.deriveCallsign(publicKeyHex)}';
 }
 
@@ -47,6 +51,29 @@ class NetworkKeys {
     final i2p = _sealed(dataDir, 'i2p/identity.key', key, notes, (b) => I2pIdentity.fromBytes(b) != null,
         () => I2pIdentity.generate().toBytes());
     return NetworkKeys(XprsStation(HEX.encode(station)), i2p, notes);
+  }
+
+  /// Puts an account this device already has ([privHex], 64 hex characters
+  /// of a NOSTR secret key) in place of the one here, and keeps the old
+  /// file aside. The caller restarts the private network afterwards, so the
+  /// callsign, the rooms and the contact card follow the new account.
+  ///
+  /// Curve math and file writes: call it off the UI isolate.
+  static XprsStation importStation(String dataDir, String privHex) {
+    final hex = privHex.trim().toLowerCase();
+    if (!RegExp(r'^[0-9a-f]{64}$').hasMatch(hex)) throw const FormatException('not a 64 character secret key');
+    final station = XprsStation(hex); // derives the public key, so a bad key throws here
+    final key = DeviceKey.loadOrCreate(dataDir);
+    final f = File('$dataDir/xprs/identity.key');
+    if (f.existsSync()) {
+      f.renameSync('${f.path}.replaced-${DateTime.now().millisecondsSinceEpoch}');
+    }
+    f.parent.createSync(recursive: true);
+    final tmp = File('${f.path}.${Random.secure().nextInt(1 << 30)}.tmp');
+    tmp.writeAsStringSync(jsonEncode(KeyBox.seal(key, Uint8List.fromList(HEX.decode(hex)))), flush: true);
+    if (Platform.isLinux || Platform.isMacOS) Process.runSync('chmod', ['600', tmp.path]);
+    tmp.renameSync(f.path);
+    return station;
   }
 
   /// The secret in [name], or a new one from [create] when there is none.

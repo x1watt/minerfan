@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
@@ -133,4 +134,54 @@ void main() {
       await e.close();
     }
   }, timeout: const Timeout(Duration(minutes: 2)));
+
+  test('roster answers go only to the asker and stop at the bound', () async {
+    final net = _Net();
+    final adminKey = NostrCrypto.generateKeyPair();
+    final engine = RoomEngine(
+      room: 'MONERO',
+      store: RoomStore('${tmp.path}/admin', 'MONERO'),
+      bearer: net.join('admin.b32.i2p'),
+      privHex: adminKey.privateKeyHex,
+      self: adminKey.callsign,
+      members: MemberTable(self: 'admin.b32.i2p'),
+      run: inline,
+      admin: adminKey.callsign,
+      adminKeyHex: adminKey.publicKeyHex,
+      rosterBudget: HistoryBudget(perAsker: 2, total: 10),
+    );
+    await engine.start();
+    engine.online('admin.b32.i2p', const []);
+    expect(await engine.grantTerm('X1MOD1', BigInt.from(10)), Moderated.done);
+
+    // A member that keeps greeting: it is answered twice, then no more.
+    final asker = NostrCrypto.generateKeyPair();
+    final probe = net.join('probe.b32.i2p');
+    final rosters = <RoomFrame>[];
+    final other = net.join('other.b32.i2p');
+    final strays = <RoomFrame>[];
+    final subs = [
+      probe.frames.listen((f) {
+        if (f.payload.contains('t:moderate')) rosters.add(f);
+      }),
+      other.frames.listen(strays.add),
+    ];
+    final hello = jsonEncode({
+      'v': 1,
+      'type': 'hello',
+      'room': 'MONERO',
+      'id': signRoomIdentity(asker.privateKeyHex, 'probe'),
+    });
+    for (var i = 0; i < 4; i++) {
+      await probe.send('admin.b32.i2p', hello);
+      await Future<void>.delayed(const Duration(milliseconds: 150));
+    }
+    expect(rosters, hasLength(2), reason: 'two answers allowed, the rest refused');
+    expect(strays, isEmpty, reason: 'the roster is never broadcast');
+
+    for (final s in subs) {
+      await s.cancel();
+    }
+    await engine.close();
+  }, timeout: const Timeout(Duration(minutes: 1)));
 }

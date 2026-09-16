@@ -9,6 +9,8 @@ import '../network/private_network.dart';
 import '../desktop.dart';
 import '../mining_service.dart';
 import '../theme.dart';
+import 'account_keys.dart';
+import 'admin_rooms.dart';
 import 'widgets.dart';
 
 /// App-wide settings: power use, theme, web server/API.
@@ -191,6 +193,10 @@ class SettingsPage extends StatelessWidget {
         _MoneroNodeField(app),
         const SectionTitle('Private network (I2P)'),
         _PrivateNetworkSection(app),
+        if (signsAsRoomsAdmin(app)) ...[
+          const SectionTitle('Rooms admin'),
+          AdminRoomsSection(app),
+        ],
         const SectionTitle('Web server and API'),
         SwitchListTile(
           contentPadding: EdgeInsets.zero,
@@ -285,6 +291,7 @@ class _PrivateNetworkSection extends StatelessWidget {
         const SizedBox(height: 10),
         _copyable(context, 'Callsign', n.station!.callsign, 'Callsign copied'),
         _copyable(context, 'Public key', n.station!.npub, 'Public key copied'),
+        AccountRows(n),
       ],
       if (n.address != null) ...[
         _copyable(context, 'I2P address', n.address!, 'I2P address copied'),

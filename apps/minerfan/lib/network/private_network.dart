@@ -110,6 +110,23 @@ class PrivateNetwork extends ChangeNotifier {
   // callbacks above would carry `this` along and could not be sent.
   static Future<NetworkKeys> _loadKeys(String dir) => Isolate.run(() => NetworkKeys.loadOrCreate(dir));
 
+  static Future<XprsStation> _importStation(String dir, String hex) =>
+      Isolate.run(() => NetworkKeys.importStation(dir, hex));
+
+  /// Puts the account [privHex] (a NOSTR secret key, 64 hex) in place of
+  /// this device's, keeping the old one aside. The node stops; the app asks
+  /// the user to start it again, so every part picks up the new callsign.
+  /// Returns the account now in place.
+  Future<XprsStation> useStation(String privHex) async {
+    stop();
+    final station = await _importStation(dataDir, privHex);
+    _keys = null;
+    _loading = null;
+    _log('this device now signs as ${station.callsign}; start minerfan again to use it');
+    notifyListeners();
+    return station;
+  }
+
   void _log(String line) {
     final stamped = '${DateTime.now().toIso8601String().substring(11, 19)} $line';
     // Also on the console (logcat on Android), where a whole run can be read.
