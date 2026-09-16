@@ -290,3 +290,5 @@ svg.os { width: 18px; height: 18px; fill: currentColor; flex: none; }
   nav a[href="#coins"] { display: none; }
   .coins { grid-template-columns: 1fr; }
 }
+
+.coin code { overflow-wrap: anywhere; }
