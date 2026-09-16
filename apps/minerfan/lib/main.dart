@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'app_controller.dart';
+import 'desktop.dart';
 import 'theme.dart';
 import 'ui/contacts_page.dart';
 import 'ui/dashboard.dart';
@@ -56,6 +57,63 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   int _index = 0;
+  bool _closing = false;
+
+  @override
+  void initState() {
+    super.initState();
+    if (Desktop.supported) Desktop.onClose(_closeRequested);
+  }
+
+  /// The close button was pressed and the runner left the decision here:
+  /// quit outright when that is the setting, otherwise ask once.
+  Future<void> _closeRequested(String action) async {
+    final app = widget.app;
+    if (action == CloseAction.quit.name) {
+      await app.quit();
+      return;
+    }
+    if (_closing) return;
+    _closing = true;
+    try {
+      var remember = false;
+      final choice = await showDialog<CloseAction>(
+        context: context,
+        builder: (c) => AlertDialog(
+          title: const Text('Close minerfan?'),
+          content: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
+            const Text(
+              'minerfan can keep mining in the dock, or stop the miners and quit. Quitting saves what the '
+              'miners and wallets have done so far.',
+            ),
+            StatefulBuilder(
+              builder: (_, setLocal) => CheckboxListTile(
+                contentPadding: EdgeInsets.zero,
+                controlAffinity: ListTileControlAffinity.leading,
+                title: const Text('Do this from now on'),
+                value: remember,
+                onChanged: (v) => setLocal(() => remember = v ?? false),
+              ),
+            ),
+          ]),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(c), child: const Text('Cancel')),
+            TextButton(onPressed: () => Navigator.pop(c, CloseAction.dock), child: const Text('Keep mining')),
+            FilledButton(onPressed: () => Navigator.pop(c, CloseAction.quit), child: const Text('Quit minerfan')),
+          ],
+        ),
+      );
+      if (choice == null) return;
+      if (remember) app.setCloseAction(choice);
+      if (choice == CloseAction.quit) {
+        await app.quit();
+      } else {
+        await Desktop.minimize();
+      }
+    } finally {
+      _closing = false;
+    }
+  }
 
   static const _destinations = [
     (Icons.dashboard_outlined, Icons.dashboard, 'Dashboard'),

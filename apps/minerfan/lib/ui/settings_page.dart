@@ -138,14 +138,36 @@ class SettingsPage extends StatelessWidget {
             value: s.startWithComputer,
             onChanged: app.setStartWithComputer,
           ),
+          Padding(
+            padding: const EdgeInsets.only(top: 8, bottom: 6),
+            child: Text('When you close the window', style: t.textTheme.bodyMedium),
+          ),
+          SegmentedButton<CloseAction>(
+            showSelectedIcon: false,
+            segments: const [
+              ButtonSegment(value: CloseAction.ask, label: Text('Ask')),
+              ButtonSegment(value: CloseAction.dock, label: Text('Keep mining')),
+              ButtonSegment(value: CloseAction.quit, label: Text('Quit')),
+            ],
+            selected: {s.closeAction},
+            onSelectionChanged: (v) => app.setCloseAction(v.first),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(top: 6),
+            child: Text(
+              switch (s.closeAction) {
+                CloseAction.ask => 'The close button asks whether to keep mining in the dock or to quit.',
+                CloseAction.dock => 'The close button sends minerfan to the dock and it keeps mining.',
+                CloseAction.quit => 'The close button stops the miners and quits.',
+              },
+              style: muted,
+            ),
+          ),
           ListTile(
             contentPadding: EdgeInsets.zero,
             leading: const Icon(Icons.power_settings_new),
             title: const Text('Quit minerfan'),
-            subtitle: const Text(
-              'The close button keeps minerfan mining in the dock. This stops the miners and '
-              'quits.',
-            ),
+            subtitle: const Text('Stops the miners and quits, whatever the close button does.'),
             onTap: app.quit,
           ),
         ],

@@ -42,6 +42,18 @@ enum PowerProfile {
   eco,
 }
 
+/// What the window's close button does on the desktop.
+enum CloseAction {
+  /// Ask each time: keep mining in the dock, or quit.
+  ask,
+
+  /// Keep mining: the window goes to the dock.
+  dock,
+
+  /// Stop the miners and quit.
+  quit,
+}
+
 /// App-wide settings (`app.json`); each miner keeps its own.
 class AppSettings {
   PowerProfile power;
@@ -64,6 +76,9 @@ class AppSettings {
 
   /// Desktop: start minimized in the dock when the user logs in.
   bool startWithComputer;
+
+  /// Desktop: what the window's close button does.
+  CloseAction closeAction;
 
   /// Monero node whose RPC gives decoys and fees for sending.
   String moneroNode;
@@ -92,6 +107,7 @@ class AppSettings {
     Map<String, bool>? minerEnabled,
     this.askedBattery = false,
     this.startWithComputer = true,
+    this.closeAction = CloseAction.ask,
     String? moneroNode,
     bool? i2pEnabled,
     Set<String>? autoWallets,
@@ -114,6 +130,7 @@ class AppSettings {
     'minerEnabled': minerEnabled,
     'askedBattery': askedBattery,
     'startWithComputer': startWithComputer,
+    'closeAction': closeAction.name,
     'moneroNode': moneroNode,
     'i2pEnabled': i2pEnabled,
     'autoWallets': autoWallets.toList()..sort(),
@@ -130,6 +147,7 @@ class AppSettings {
     miningOn: (m['miningOn'] as bool?) ?? false,
     askedBattery: (m['askedBattery'] as bool?) ?? false,
     startWithComputer: (m['startWithComputer'] as bool?) ?? true,
+    closeAction: CloseAction.values.asNameMap()[m['closeAction']] ?? CloseAction.ask,
     moneroNode: m['moneroNode'] as String?,
     i2pEnabled: m['i2pEnabled'] as bool?,
     autoWallets: {for (final a in (m['autoWallets'] as List?) ?? const []) '$a'},
@@ -366,6 +384,7 @@ class AppController extends ChangeNotifier {
     _loaded = true;
     unawaited(rooms.start().catchError((Object e) => debugPrint('rooms: $e')));
     Desktop.integrate(startWithComputer: settings.startWithComputer);
+    unawaited(Desktop.setCloseAction(settings.closeAction.name));
     if (settings.i2pEnabled) unawaited(privateNetwork.start());
     sustainedSupported = await MiningService.sustainedPerformanceSupported();
     notifyListeners();
@@ -724,6 +743,14 @@ class AppController extends ChangeNotifier {
     settings.startWithComputer = on;
     Desktop.setStartWithComputer(on);
     save();
+  }
+
+  /// What the window's close button does from now on.
+  void setCloseAction(CloseAction a) {
+    settings.closeAction = a;
+    unawaited(Desktop.setCloseAction(a.name));
+    save();
+    notifyListeners();
   }
 
   /// The notification's Stop action: the master switch off.

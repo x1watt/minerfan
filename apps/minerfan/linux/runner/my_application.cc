@@ -16,8 +16,12 @@ struct _MyApplication {
   FlMethodChannel* window_channel;
   // Started by the autostart entry: stay minimized in the dock.
   gboolean start_minimized;
-  // Set by a real quit; until then the close button only minimizes.
+  // Set by a real quit; until then the close button never destroys the
+  // window on its own.
   gboolean quitting;
+  // What the close button does: "ask", "dock" or "quit" (the app's setting).
+  // Anything but "dock" is handed to Dart, which asks or quits.
+  gchar* close_action;
 };
 
 G_DEFINE_TYPE(MyApplication, my_application, GTK_TYPE_APPLICATION)
@@ -29,10 +33,19 @@ static void first_frame_cb(MyApplication* self, FlView* view) {
   if (self->start_minimized) gtk_window_iconify(GTK_WINDOW(toplevel));
 }
 
-// The close button keeps the miners running: the window goes to the dock.
+// The close button: it never ends the app by itself. With the setting on
+// "dock" the window just goes to the dock; otherwise Dart is told, and it
+// asks the user or quits (stopping the miners first).
 static gboolean delete_event_cb(GtkWidget* widget, GdkEvent* event, MyApplication* self) {
   if (self->quitting) return FALSE;
-  gtk_window_iconify(GTK_WINDOW(widget));
+  const gchar* action = self->close_action != nullptr ? self->close_action : "ask";
+  if (self->window_channel == nullptr || strcmp(action, "dock") == 0) {
+    gtk_window_iconify(GTK_WINDOW(widget));
+    return TRUE;
+  }
+  gtk_window_present(GTK_WINDOW(widget));
+  g_autoptr(FlValue) args = fl_value_new_string(action);
+  fl_method_channel_invoke_method(self->window_channel, "closeRequested", args, nullptr, nullptr, nullptr);
   return TRUE;
 }
 
@@ -49,6 +62,13 @@ static void window_method_cb(FlMethodChannel* channel, FlMethodCall* call, gpoin
     return;
   } else if (strcmp(method, "minimize") == 0) {
     if (self->window != nullptr) gtk_window_iconify(self->window);
+    response = FL_METHOD_RESPONSE(fl_method_success_response_new(nullptr));
+  } else if (strcmp(method, "setCloseAction") == 0) {
+    FlValue* args = fl_method_call_get_args(call);
+    if (args != nullptr && fl_value_get_type(args) == FL_VALUE_TYPE_STRING) {
+      g_free(self->close_action);
+      self->close_action = g_strdup(fl_value_get_string(args));
+    }
     response = FL_METHOD_RESPONSE(fl_method_success_response_new(nullptr));
   } else if (strcmp(method, "show") == 0) {
     if (self->window != nullptr) gtk_window_present(self->window);
@@ -185,6 +205,7 @@ static void my_application_shutdown(GApplication* application) {
 static void my_application_dispose(GObject* object) {
   MyApplication* self = MY_APPLICATION(object);
   g_clear_pointer(&self->dart_entrypoint_arguments, g_strfreev);
+  g_clear_pointer(&self->close_action, g_free);
   g_clear_object(&self->window_channel);
   G_OBJECT_CLASS(my_application_parent_class)->dispose(object);
 }

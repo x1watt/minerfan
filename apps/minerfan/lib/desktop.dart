@@ -85,6 +85,27 @@ abstract final class Desktop {
     }
   }
 
+  /// Tells the window what its close button should do: `ask` (the runner
+  /// hands the press to [onClose]), `dock` (the runner minimizes by itself,
+  /// even if this app's isolate is busy) or `quit` (handed over too, so the
+  /// miners stop before the app ends).
+  static Future<void> setCloseAction(String action) async {
+    try {
+      await _window.invokeMethod<void>('setCloseAction', action);
+    } on MissingPluginException {
+      // Not the GTK runner.
+    }
+  }
+
+  /// Runs [handler] when the close button was pressed and the runner left
+  /// the decision to the app. The argument is the current setting.
+  static void onClose(Future<void> Function(String action) handler) {
+    _window.setMethodCallHandler((call) async {
+      if (call.method == 'closeRequested') await handler('${call.arguments ?? 'ask'}');
+      return null;
+    });
+  }
+
   static Future<void> minimize() async {
     try {
       await _window.invokeMethod<void>('minimize');

@@ -284,6 +284,16 @@ several miners:
   the launcher entry), the Android launcher PNGs, the adaptive icon
   (foreground, background, monochrome for themed icons) and the status bar
   icon.
+- Closing on the desktop (`linux/runner/my_application.cc`, `lib/desktop.dart`):
+  the window's close button never ends the app by itself. The GTK runner
+  holds the setting (`closeAction` in `app.json`: ask, dock or quit): on
+  `dock` it minimizes the window itself, so it works even while the Dart
+  isolate is busy; otherwise it calls `closeRequested` on the
+  `minerfan/window` channel and the app either asks (keep mining in the
+  dock, or quit, with "do this from now on") or quits. Quitting always goes
+  through `AppController.quit`, which stops the miners, the chains, the
+  rooms and the I2P node before the runner ends the process. Settings has
+  the same three choices and an explicit "Quit minerfan".
 - Power profiles: performance (no flexible mining), balanced (flexible
   CPU/RAM mining, the default), eco (flexible on half the threads). A change
   applies at the next start.
