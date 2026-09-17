@@ -21,8 +21,18 @@ abstract final class DeviceKey {
     Directory(dataDir).createSync(recursive: true);
     // Created empty and restricted before the key is written.
     f.writeAsBytesSync(const []);
-    if (Platform.isLinux || Platform.isMacOS) Process.runSync('chmod', ['600', f.path]);
+    ownerOnly(f.path);
     f.writeAsBytesSync(key, flush: true);
     return key;
   }
+}
+
+/// Makes [path] readable by its owner only, where the platform has Unix
+/// permissions. Best effort: a sandboxed macOS app may not be allowed to run
+/// `chmod`, and its container is private to the app anyway.
+void ownerOnly(String path) {
+  if (!(Platform.isLinux || Platform.isMacOS)) return;
+  try {
+    Process.runSync('chmod', ['600', path]);
+  } catch (_) {}
 }

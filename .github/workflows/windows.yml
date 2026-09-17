@@ -8,8 +8,12 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: 'Release tag to build and upload to (for example v0.2.1)'
-        required: true
+        description: 'Release tag to upload to (for example v0.2.1); empty builds without uploading'
+        required: false
+      ref:
+        description: 'What to build when no tag is given'
+        required: false
+        default: main
 
 permissions:
   contents: write
@@ -22,11 +26,14 @@ jobs:
       - name: The tag to build
         id: pick
         shell: bash
-        run: echo "tag=${{ github.event.inputs.tag || github.ref_name }}" >> "$GITHUB_OUTPUT"
+        run: |
+          if [ "${{ github.event_name }}" = "push" ]; then tag="${{ github.ref_name }}"; else tag="${{ github.event.inputs.tag }}"; fi
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "ref=${tag:-${{ github.event.inputs.ref || 'main' }}}" >> "$GITHUB_OUTPUT"
 
       - uses: actions/checkout@v4
         with:
-          ref: ${{ steps.pick.outputs.tag }}
+          ref: ${{ steps.pick.outputs.ref }}
           path: minerfan
 
       # minerfan uses the I2P node from the checkout next to it.
@@ -60,10 +67,15 @@ jobs:
             + "  minerfan-windows-x64.zip" | Out-File -Encoding ascii "$env:GITHUB_WORKSPACE/minerfan-windows-x64.zip.sha256"
 
       - name: Attach to the release
+        if: steps.pick.outputs.tag != ''
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          for i in $(seq 1 90); do
+            gh release view "${{ steps.pick.outputs.tag }}" --repo "${{ github.repository }}" > /dev/null 2>&1 && break
+            echo "waiting for the release ${{ steps.pick.outputs.tag }}"; sleep 20
+          done
           gh release upload "${{ steps.pick.outputs.tag }}" \
             "$GITHUB_WORKSPACE/minerfan-windows-x64.zip" \
             "$GITHUB_WORKSPACE/minerfan-windows-x64.zip.sha256" \

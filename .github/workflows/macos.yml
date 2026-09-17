@@ -1,0 +1,107 @@
+name: macOS build
+
+# Builds the macOS app (universal: Apple silicon and Intel), which cannot be
+# built on Linux, checks that it starts, and attaches a disk image to the
+# release of the tag it was asked for.
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag to upload to (for example v0.2.1); empty builds without uploading'
+        required: false
+      ref:
+        description: 'What to build when no tag is given'
+        required: false
+        default: main
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: macos-14
+    steps:
+      - name: The tag to build
+        id: pick
+        run: |
+          if [ "${{ github.event_name }}" = "push" ]; then tag="${{ github.ref_name }}"; else tag="${{ github.event.inputs.tag }}"; fi
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "ref=${tag:-${{ github.event.inputs.ref || 'main' }}}" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.pick.outputs.ref }}
+          path: minerfan
+
+      # minerfan uses the I2P node from the checkout next to it.
+      - uses: actions/checkout@v4
+        with:
+          repository: x1watt/i2p-dart
+          ref: release-0.3.0
+          path: i2p-dart
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.38.1
+          channel: stable
+
+      - name: Build
+        working-directory: minerfan/apps/minerfan
+        run: |
+          flutter config --enable-macos-desktop
+          flutter build macos --release
+          app=build/macos/Build/Products/Release/minerfan.app
+          lipo -archs "$app/Contents/MacOS/minerfan"
+          codesign -dv --entitlements - "$app" 2>&1 | head -30
+
+      # Starts the app for a minute: it must stay up (keys made, network and
+      # rooms started under the sandbox) and draw its window.
+      - name: Smoke run
+        continue-on-error: true
+        working-directory: minerfan/apps/minerfan
+        run: |
+          app=build/macos/Build/Products/Release/minerfan.app
+          "$app/Contents/MacOS/minerfan" > "$RUNNER_TEMP/smoke.log" 2>&1 &
+          pid=$!
+          sleep 60
+          screencapture -x "$RUNNER_TEMP/smoke.png" || true
+          if kill -0 "$pid"; then echo "still running after 60 s"; else echo "exited early"; fi
+          kill "$pid" || true
+          tail -60 "$RUNNER_TEMP/smoke.log"
+          ls -la "$HOME/Library/Containers/app.minerfan/Data/Library/Application Support/minerfan" || true
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: macos-smoke
+          path: |
+            ${{ runner.temp }}/smoke.log
+            ${{ runner.temp }}/smoke.png
+          if-no-files-found: ignore
+
+      - name: Disk image
+        working-directory: minerfan/apps/minerfan
+        run: |
+          stage="$RUNNER_TEMP/dmg"
+          mkdir -p "$stage"
+          ditto build/macos/Build/Products/Release/minerfan.app "$stage/minerfan.app"
+          ln -s /Applications "$stage/Applications"
+          hdiutil create -volname minerfan -srcfolder "$stage" -ov -format UDZO "$GITHUB_WORKSPACE/minerfan-macos.dmg"
+          cd "$GITHUB_WORKSPACE"
+          shasum -a 256 minerfan-macos.dmg > minerfan-macos.dmg.sha256
+
+      - name: Attach to the release
+        if: steps.pick.outputs.tag != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          for i in $(seq 1 90); do
+            gh release view "${{ steps.pick.outputs.tag }}" --repo "${{ github.repository }}" > /dev/null 2>&1 && break
+            echo "waiting for the release ${{ steps.pick.outputs.tag }}"; sleep 20
+          done
+          gh release upload "${{ steps.pick.outputs.tag }}" \
+            "$GITHUB_WORKSPACE/minerfan-macos.dmg" \
+            "$GITHUB_WORKSPACE/minerfan-macos.dmg.sha256" \
+            --repo "${{ github.repository }}" --clobber

@@ -3,6 +3,8 @@ import 'dart:io';
 
 import 'package:xprs_wire/xprs_wire.dart';
 
+import '../wallets/device_key.dart' show ownerOnly;
+
 /// Who runs the coin rooms' moderation (docs/architecture.md, "Coin
 /// rooms"): the admin's station key, which grants the bought moderator
 /// terms, and the address each room's rights are bought with.
@@ -104,7 +106,7 @@ abstract final class ModerationConfig {
         'adminNpub': _adminNpub,
         'addresses': _addresses,
       }));
-      if (Platform.isLinux || Platform.isMacOS) await Process.run('chmod', ['600', f.path]);
+      ownerOnly(f.path);
       return 'rooms: settings kept in ${f.path}';
     } catch (e) {
       return 'rooms: could not use ${f.path}: $e';

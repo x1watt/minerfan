@@ -71,7 +71,7 @@ class NetworkKeys {
     f.parent.createSync(recursive: true);
     final tmp = File('${f.path}.${Random.secure().nextInt(1 << 30)}.tmp');
     tmp.writeAsStringSync(jsonEncode(KeyBox.seal(key, Uint8List.fromList(HEX.decode(hex)))), flush: true);
-    if (Platform.isLinux || Platform.isMacOS) Process.runSync('chmod', ['600', tmp.path]);
+    ownerOnly(tmp.path);
     tmp.renameSync(f.path);
     return station;
   }
@@ -96,7 +96,7 @@ class NetworkKeys {
     f.parent.createSync(recursive: true);
     final tmp = File('${f.path}.${Random.secure().nextInt(1 << 30)}.tmp');
     tmp.writeAsStringSync(jsonEncode(KeyBox.seal(key, secret)), flush: true);
-    if (Platform.isLinux || Platform.isMacOS) Process.runSync('chmod', ['600', tmp.path]);
+    ownerOnly(tmp.path);
     tmp.renameSync(f.path);
     notes.add('made a new $name');
     return secret;
