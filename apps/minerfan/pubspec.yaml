@@ -1,7 +1,7 @@
 name: minerfan
 description: "minerfan: multi-miner app in pure Dart. Monero on its own P2Pool node and Monero light peer, RandomX in Dart; Cryptoescudo solo on the GPU with an SPV wallet."
 publish_to: 'none'
-version: 0.2.1+3
+version: 0.2.2+4
 
 environment:
   sdk: ^3.10.0
