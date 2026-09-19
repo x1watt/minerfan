@@ -27,9 +27,10 @@ jobs:
           echo "tag=$tag" >> "$GITHUB_OUTPUT"
           echo "version=${tag#v}" >> "$GITHUB_OUTPUT"
 
+      # The tooling comes from the default branch, not from the tag: a
+      # release made before a fix should still be publishable with it.
       - uses: actions/checkout@v4
         with:
-          ref: ${{ steps.pick.outputs.tag }}
           path: minerfan
 
       - uses: actions/checkout@v4
