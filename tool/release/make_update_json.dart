@@ -1,6 +1,6 @@
 // Writes the update.json the app reads from the project's page.
 //
-//   dart run tool/make_update_json.dart <version> <assets dir> <out file>
+//   dart run tool/release/make_update_json.dart <version> <assets dir> <out file>
 //
 // The assets directory is the one a release was packed from: every file
 // it names is hashed, so the app can tell a whole download from a broken
@@ -23,7 +23,7 @@ const builds = {
 
 Future<void> main(List<String> args) async {
   if (args.length < 3) {
-    stderr.writeln('use: dart run tool/make_update_json.dart <version> <assets dir> <out file> [notes file]');
+    stderr.writeln('use: dart run make_update_json.dart <version> <assets dir> <out file> [notes file]');
     exit(2);
   }
   final version = args[0].startsWith('v') ? args[0].substring(1) : args[0];

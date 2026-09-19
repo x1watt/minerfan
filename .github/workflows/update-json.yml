@@ -51,7 +51,7 @@ jobs:
           ls -l assets
 
       - name: Write update.json
-        working-directory: minerfan/apps/minerfan
+        working-directory: minerfan/tool/release
         env:
           GH_TOKEN: ${{ github.token }}
           UPDATE_BASE: https://github.com/${{ github.repository }}/releases/download/${{ steps.pick.outputs.tag }}
@@ -60,7 +60,7 @@ jobs:
           dart pub get
           gh release view "${{ steps.pick.outputs.tag }}" --repo "${{ github.repository }}" \
             --json body -q .body | head -c 400 > "$GITHUB_WORKSPACE/notes.txt" || true
-          dart run tool/make_update_json.dart "${{ steps.pick.outputs.version }}" \
+          dart run make_update_json.dart "${{ steps.pick.outputs.version }}" \
             "$GITHUB_WORKSPACE/assets" "$GITHUB_WORKSPACE/pages/update.json" "$GITHUB_WORKSPACE/notes.txt"
           cat "$GITHUB_WORKSPACE/pages/update.json"
 

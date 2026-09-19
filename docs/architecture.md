@@ -356,8 +356,8 @@ several miners:
     constant (`UPDATE_URL`), the manifest can name its own successor
     (`next`, followed once per check) for when the page or the project
     moves or is renamed, and the user can type another address in
-    Settings. `tool/make_update_json.dart` writes the file from a
-    release's own assets, and `.github/workflows/update-json.yml` puts it
+    Settings. `tool/release/make_update_json.dart` writes the file from
+    a release's own assets, and `.github/workflows/update-json.yml` puts it
     on the page when a release is published.
 - Icon: a mining-rig fan (shroud, five swept blades, a gem at the hub) on
   a dark rounded square. `tool/icon/make_icons.py` (cairosvg) writes

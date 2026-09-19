@@ -16,3 +16,4 @@ coverage/
 # Android local files (signing keys stay out, see apps/minerfan/android/.gitignore)
 local.properties
 .gradle/
+tool/release/.dart_tool/

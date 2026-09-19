@@ -1,0 +1,11 @@
+name: release_tools
+description: Small command line helpers for cutting a release (no Flutter).
+publish_to: 'none'
+version: 1.0.0
+
+environment:
+  sdk: ^3.10.0
+
+dependencies:
+  crypto_core:
+    path: ../../packages/crypto_core
