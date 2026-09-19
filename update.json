@@ -1,0 +1,31 @@
+{
+  "app": "minerfan",
+  "version": "0.2.2",
+  "page": "https://x1watt.github.io/minerfan/",
+  "builds": {
+    "android": {
+      "url": "https://github.com/x1watt/minerfan/releases/download/v0.2.2/minerfan-android.apk",
+      "file": "minerfan-android.apk",
+      "size": 66534961,
+      "sha256": "09355c838083d2fd4223d47e71110c730eb52e67288ab22e5ee1b54f554020cd"
+    },
+    "linux-x64": {
+      "url": "https://github.com/x1watt/minerfan/releases/download/v0.2.2/minerfan-linux-x64.tar.gz",
+      "file": "minerfan-linux-x64.tar.gz",
+      "size": 17757586,
+      "sha256": "bc53a7505c91b3d692e1e54613e8f47fd26af80625922e4a4cf57bad493b990e"
+    },
+    "windows-x64": {
+      "url": "https://github.com/x1watt/minerfan/releases/download/v0.2.2/minerfan-windows-x64.zip",
+      "file": "minerfan-windows-x64.zip",
+      "size": 13995064,
+      "sha256": "da07760a6d56103adb85740a44bc0095efc89cfc9cb4f20c6f20f1eed1521e21"
+    },
+    "macos": {
+      "url": "https://github.com/x1watt/minerfan/releases/download/v0.2.2/minerfan-macos.dmg",
+      "file": "minerfan-macos.dmg",
+      "size": 24878514,
+      "sha256": "be0dbaf5fea13dd2434fe5ffd2154151b83782f4087e90b3d57d9459bf26bd5c"
+    }
+  }
+}
