@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
 import '../app_controller.dart';
 import '../miners/miner.dart';
@@ -195,6 +196,46 @@ class _PayoutPickerState extends State<PayoutPicker> {
           ),
           onChanged: (v) => w.onChanged(v.trim()),
         ),
+    ]);
+  }
+}
+
+/// A QR code on white, whatever the app's theme: a scanner needs the
+/// light squares light. Used by the contact card, the shop's bills and the
+/// wallets' receive dialogs.
+class QrCard extends StatelessWidget {
+  final String? data;
+  final double size;
+
+  /// Shown under the code, small and centred (an amount, a reference).
+  final String? caption;
+  const QrCard(this.data, {this.size = 280, this.caption, super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final t = Theme.of(context);
+    final d = data;
+    return Column(mainAxisSize: MainAxisSize.min, children: [
+      Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12)),
+        child: SizedBox(
+          width: size,
+          height: size,
+          child: d == null
+              ? const Center(child: CircularProgressIndicator())
+              : QrImageView(
+                  data: d,
+                  backgroundColor: Colors.white,
+                  errorCorrectionLevel: QrErrorCorrectLevel.M,
+                  padding: EdgeInsets.zero,
+                ),
+        ),
+      ),
+      if (caption != null) ...[
+        const SizedBox(height: 8),
+        Text(caption!, textAlign: TextAlign.center, style: t.textTheme.bodySmall),
+      ],
     ]);
   }
 }

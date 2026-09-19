@@ -23,6 +23,7 @@ import 'moderation/admin.dart';
 import 'moderation/config.dart';
 import 'network/rooms.dart';
 import 'prices.dart';
+import 'shop/shop.dart';
 import 'theme.dart';
 import 'wallets/device_key.dart';
 import 'wallets/keyed_wallet.dart';
@@ -200,6 +201,9 @@ class AppController extends ChangeNotifier {
     ..addListener(() {
       if (!identical(privateNetwork.link, _syncedLink)) _syncLinkContacts();
     });
+
+  /// What this device sells (`shop.json`), its cart and its takings.
+  late final Shop shop = Shop(dataDir)..addListener(notifyListeners);
 
   /// The address book (`contacts.json`) and this device's own card.
   late final ContactBook contacts = ContactBook(dataDir)
@@ -381,6 +385,7 @@ class AppController extends ChangeNotifier {
     _loadWallets();
     await _ensureWallets();
     await contacts.load();
+    await shop.load();
     unawaited(privateNetwork.keys().then((_) {}, onError: (Object e) => debugPrint('network keys: $e')));
     _loaded = true;
     // The rooms' admin and addresses, from this profile's file when it has

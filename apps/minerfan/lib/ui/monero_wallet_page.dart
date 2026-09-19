@@ -7,11 +7,13 @@ import 'package:xmr_core/xmr_core.dart';
 
 import '../app_controller.dart';
 import '../format.dart';
+import '../shop/payment_uri.dart';
 import '../wallets/keyed_wallet.dart';
 import '../wallets/monero_wallet.dart';
 import 'chat_button.dart';
 import 'contact_picker.dart';
 import 'wallet_keys_ui.dart';
+import 'widgets.dart';
 
 String xmrAmount(int piconero) => coins(piconero, decimals: 12);
 
@@ -261,6 +263,8 @@ void showMoneroReceive(BuildContext context, MoneroWallet w) {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text('Send only Monero (XMR) to this address:'),
+            const SizedBox(height: 12),
+            Center(child: QrCard(buildPaymentUri(PaymentRequest(chain: w.chain, address: w.address)), size: 220)),
             const SizedBox(height: 12),
             SelectableText(w.address, style: const TextStyle(fontFamily: 'monospace')),
             const SizedBox(height: 12),

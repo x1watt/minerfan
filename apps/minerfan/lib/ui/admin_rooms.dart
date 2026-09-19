@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../app_controller.dart';
+import '../format.dart';
 import '../moderation/config.dart';
 import '../network/rooms.dart';
-import 'room_moderation.dart' show coinAmount;
 
 /// Whether this device signs as the rooms' admin, which is what turns the
 /// duties below on: the claims that reach it are checked against its own

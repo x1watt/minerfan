@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:qr_flutter/qr_flutter.dart';
 
 import '../app_controller.dart';
 import '../contacts/contact.dart';
@@ -11,6 +10,7 @@ import '../network/network_keys.dart';
 import '../wallets/keyed_wallet.dart';
 import '../wallets/monero_wallet.dart';
 import '../wallets/wallet.dart';
+import 'widgets.dart';
 import 'field_types.dart';
 import 'fields_editor.dart';
 
@@ -133,24 +133,7 @@ class _MyCardPageState extends State<MyCardPage> {
       body: SafeArea(
         child: ListView(padding: const EdgeInsets.fromLTRB(16, 8, 16, 32), children: [
           if (_error != null) Text(_error!, style: TextStyle(color: t.colorScheme.error)),
-          Center(
-            child: Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12)),
-              child: SizedBox(
-                width: 280,
-                height: 280,
-                child: card == null
-                    ? const Center(child: CircularProgressIndicator())
-                    : QrImageView(
-                        data: card,
-                        backgroundColor: Colors.white,
-                        errorCorrectionLevel: QrErrorCorrectLevel.M,
-                        padding: EdgeInsets.zero,
-                      ),
-              ),
-            ),
-          ),
+          Center(child: QrCard(card)),
           const SizedBox(height: 12),
           if (me != null) ...[
             Center(child: Text(me.callsign, style: t.textTheme.headlineSmall?.copyWith(color: t.colorScheme.primary))),

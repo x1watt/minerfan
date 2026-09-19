@@ -6,10 +6,12 @@ import 'package:utxo_core/utxo_core.dart';
 
 import '../app_controller.dart';
 import '../format.dart';
+import '../shop/payment_uri.dart';
 import '../wallets/utxo_wallet.dart';
 import 'chat_button.dart';
 import 'contact_picker.dart';
 import 'wallet_keys_ui.dart';
+import 'widgets.dart';
 
 /// One SPV wallet: balance, receive and send on one tab, the history on
 /// another.
@@ -197,6 +199,8 @@ void showReceive(BuildContext context, UtxoWallet w) {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text('Send only ${w.chainName} (${w.symbol}) to this address:'),
+            const SizedBox(height: 12),
+            Center(child: QrCard(buildPaymentUri(PaymentRequest(chain: w.chain, address: w.address)), size: 220)),
             const SizedBox(height: 12),
             SelectableText(w.address, style: const TextStyle(fontFamily: 'monospace')),
             const SizedBox(height: 12),

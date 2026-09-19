@@ -12,12 +12,6 @@ import '../wallets/monero_wallet.dart';
 import '../wallets/utxo_wallet.dart';
 import '../wallets/wallet.dart';
 
-/// Decimals of a coin's smallest unit, for amounts in the rooms.
-int coinDecimals(String coin) => coin == 'monero' ? 12 : 8;
-
-String coinAmount(String coin, BigInt units, String symbol) =>
-    '${coins(units.toInt(), decimals: coinDecimals(coin))} $symbol';
-
 String _date(int ms) {
   final d = DateTime.fromMillisecondsSinceEpoch(ms);
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];

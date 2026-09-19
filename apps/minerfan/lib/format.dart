@@ -19,6 +19,27 @@ String coins(int units, {int decimals = 8}) {
   return '${neg ? '-' : ''}${u ~/ base}.$frac';
 }
 
+/// Decimals of a coin's smallest unit, by chain id.
+int coinDecimals(String coin) => coin == 'monero' ? 12 : 8;
+
+/// An amount of [coin] for the screen, with its symbol.
+String coinAmount(String coin, BigInt units, String symbol) =>
+    '${coins(units.toInt(), decimals: coinDecimals(coin))} $symbol';
+
+/// Smallest units as the exact decimal a payment code carries: every
+/// trailing zero trimmed, and no trailing dot (1000, not 1000.00, and
+/// 0.0001 for 100000000 piconero). [coins] is for the screen and keeps two
+/// decimals, which a payment code must not.
+String uriAmount(int units, int decimals) {
+  final base = BigInt.from(10).pow(decimals).toInt();
+  var frac = (units.abs() % base).toString().padLeft(decimals, '0');
+  while (frac.isNotEmpty && frac.endsWith('0')) {
+    frac = frac.substring(0, frac.length - 1);
+  }
+  final whole = '${units < 0 ? '-' : ''}${units.abs() ~/ base}';
+  return frac.isEmpty ? whole : '$whole.$frac';
+}
+
 /// Parses a decimal coin amount into smallest units exactly; null when it
 /// is not a positive number with at most [decimals] places.
 int? parseCoins(String text, {int decimals = 8}) {
