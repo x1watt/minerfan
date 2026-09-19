@@ -24,6 +24,7 @@ import 'moderation/config.dart';
 import 'network/rooms.dart';
 import 'prices.dart';
 import 'shop/shop.dart';
+import 'update/updater.dart';
 import 'theme.dart';
 import 'wallets/device_key.dart';
 import 'wallets/keyed_wallet.dart';
@@ -201,6 +202,9 @@ class AppController extends ChangeNotifier {
     ..addListener(() {
       if (!identical(privateNetwork.link, _syncedLink)) _syncLinkContacts();
     });
+
+  /// Watches the project's page for a new version (update/updater.dart).
+  late final Updater updater = Updater(dataDir)..addListener(notifyListeners);
 
   /// What this device sells (`shop.json`), its cart and its takings.
   late final Shop shop = Shop(dataDir)..addListener(notifyListeners);
@@ -386,6 +390,7 @@ class AppController extends ChangeNotifier {
     await _ensureWallets();
     await contacts.load();
     await shop.load();
+    unawaited(updater.load().then((_) => updater.check()));
     unawaited(privateNetwork.keys().then((_) {}, onError: (Object e) => debugPrint('network keys: $e')));
     _loaded = true;
     // The rooms' admin and addresses, from this profile's file when it has

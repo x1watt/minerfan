@@ -106,6 +106,19 @@ abstract final class Desktop {
     });
   }
 
+  /// Opens the folder a downloaded file sits in, so the user can get at
+  /// it. Linux only, and quiet when it does not work.
+  static Future<bool> showInFolder(String path) async {
+    if (!Platform.isLinux) return false;
+    try {
+      final dir = File(path).parent.path;
+      final r = await Process.run('xdg-open', [dir]);
+      return r.exitCode == 0;
+    } catch (_) {
+      return false;
+    }
+  }
+
   static Future<void> minimize() async {
     try {
       await _window.invokeMethod<void>('minimize');

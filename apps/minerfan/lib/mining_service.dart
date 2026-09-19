@@ -8,6 +8,16 @@ import 'package:xmr_core/xmr_core.dart';
 class MiningService {
   static const _channel = MethodChannel('minerfan/service');
 
+  /// Hands a file to whatever opens it (Android: the system installer for
+  /// an .apk). False when the platform cannot, or would not.
+  static Future<bool> openFile(String path) async {
+    try {
+      return await _channel.invokeMethod<bool>('openFile', {'path': path}) ?? false;
+    } catch (_) {
+      return false;
+    }
+  }
+
   static bool get supported => Platform.isAndroid;
 
   /// [onStopRequested] runs when the notification's Stop action is pressed.

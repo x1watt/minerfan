@@ -11,6 +11,7 @@ import '../mining_service.dart';
 import '../theme.dart';
 import 'account_keys.dart';
 import 'admin_rooms.dart';
+import 'update_ui.dart';
 import 'widgets.dart';
 
 /// App-wide settings: power use, theme, web server/API.
@@ -230,6 +231,8 @@ class SettingsPage extends StatelessWidget {
           value: s.apiEnabled,
           onChanged: null,
         ),
+        const SectionTitle('Updates'),
+        UpdateSection(app),
         const SectionTitle('About'),
         Text('minerfan', style: t.textTheme.titleMedium),
         const SizedBox(height: 4),

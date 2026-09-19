@@ -39,6 +39,11 @@ android {
     }
 }
 
+dependencies {
+    // FileProvider, to hand a downloaded update to the system installer.
+    implementation("androidx.core:core-ktx:1.13.1")
+}
+
 flutter {
     source = "../.."
 }

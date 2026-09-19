@@ -336,6 +336,29 @@ several miners:
   - The chat view (`lib/ui/chat/chat_view.dart`) is forked from the xprs
     app's ChatViewField without media; `chat_palette.dart` and
     `generated_avatar.dart` are copied from it unchanged.
+- Updates (`lib/update/`, `lib/ui/update_ui.dart`, `update/state.json`):
+  the app asks the project's page for a small JSON file once a day
+  (`update.json`: the app's name, the newest version, notes, and one
+  entry per platform with its address, size and sha256). A newer version
+  puts a line at the top of the dashboard and a section in Settings; the
+  user chooses whether to download.
+  - Downloading runs in the background and picks up where it stopped: the
+    bytes go to `<file>.part` and the next attempt asks for the rest with
+    an HTTP Range, so closing the app or losing the network costs nothing.
+    A finished file is hashed (streamed, on `Isolate.run`) against the
+    checksum the site published before it is offered, and a mismatch
+    throws the file away.
+  - Installing is the user's hand: on Android the file goes to the system
+    installer through a FileProvider (`openFile` on the `minerfan/service`
+    channel), elsewhere the app opens the folder it is in. The app never
+    replaces itself.
+  - Nothing about the address is fixed: the starting point is a build
+    constant (`UPDATE_URL`), the manifest can name its own successor
+    (`next`, followed once per check) for when the page or the project
+    moves or is renamed, and the user can type another address in
+    Settings. `tool/make_update_json.dart` writes the file from a
+    release's own assets, and `.github/workflows/update-json.yml` puts it
+    on the page when a release is published.
 - Icon: a mining-rig fan (shroud, five swept blades, a gem at the hub) on
   a dark rounded square. `tool/icon/make_icons.py` (cairosvg) writes
   `assets/icon/minerfan.svg` (the Linux dock and app menu use it through

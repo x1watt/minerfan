@@ -22,7 +22,8 @@ import io.flutter.plugin.common.MethodChannel
  * From Dart: `start` and `update` (with a `text` argument for the
  * notification), `stop`, `thermal`, `sustainedPerformance` (with `on`),
  * `sustainedPerformanceSupported`, `requestNotificationPermission`,
- * `batteryExempt` and `requestBatteryExemption`. To
+ * `batteryExempt`, `requestBatteryExemption` and `openFile` (hands a
+ * downloaded update to the system installer). To
  * Dart: `stopRequested` when the notification's Stop action is pressed.
  */
 object MiningChannel {
@@ -62,10 +63,35 @@ object MiningChannel {
                 }
                 "batteryExempt" -> result.success(batteryExempt(context))
                 "requestBatteryExemption" -> result.success(requestBatteryExemption(context))
+                "openFile" -> result.success(openFile(context, call.argument<String>("path") ?: ""))
                 else -> result.notImplemented()
             }
         }
         channel = ch
+    }
+
+    /**
+     * Hands [path] to whatever opens it, which for an .apk is the system
+     * installer. The file lives in the app's own folder, so it travels as
+     * a content URI the installer is allowed to read.
+     */
+    private fun openFile(context: Context, path: String): Boolean {
+        if (path.isEmpty()) return false
+        return try {
+            val file = java.io.File(path)
+            if (!file.exists()) return false
+            val uri = androidx.core.content.FileProvider.getUriForFile(
+                context, context.packageName + ".files", file)
+            val type = if (path.endsWith(".apk")) "application/vnd.android.package-archive" else "*/*"
+            val intent = Intent(Intent.ACTION_VIEW)
+                .setDataAndType(uri, type)
+                .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            context.startActivity(intent)
+            true
+        } catch (e: Exception) {
+            false
+        }
     }
 
     /** Asks Dart to stop the node; Dart then calls `stop`. */

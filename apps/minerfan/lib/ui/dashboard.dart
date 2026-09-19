@@ -9,6 +9,7 @@ import '../devices.dart';
 import 'chat_button.dart';
 import 'contacts_page.dart';
 import 'miners_page.dart';
+import 'update_ui.dart';
 import 'widgets.dart';
 
 /// Every miner at a glance.
@@ -22,6 +23,7 @@ class DashboardPage extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.all(12),
       children: [
+        UpdateBanner(app),
         Card(
           child: Padding(
             padding: const EdgeInsets.all(18),
