@@ -140,7 +140,7 @@ class MoneroWalletPage extends StatelessWidget {
                         'yours. ${w.viewOnly ? 'A view-only wallet sees incoming payments but not spends.' : 'Sending asks the '
                                   'node in Settings for decoy outputs and the fee (${app.settings.moneroNode}); your keys never leave '
                                   'this device.'} Its ${w.backupName} are stored encrypted with '
-                        '${w.hasPassword ? 'your password' : 'this device\'s key'}. Wallets restored from recovery words see '
+                        '${w.hasPassword ? 'your password' : 'the device key'}. Wallets restored from recovery words see '
                         'transactions from block ${checkpointEndHeight - checkpointHeaders.length + 1} on.',
                         style: muted,
                       ),

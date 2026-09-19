@@ -9,14 +9,12 @@ import 'scan_page.dart';
 /// paste or an image file elsewhere (and as the way out when the camera
 /// will not play). Returns the text, or null when nothing was read.
 ///
-/// [accept] says whether some text is the kind of code being asked for,
-/// and [what] names it in the dialog ("a payment code").
+/// [accept] says whether some text is the kind of code being asked for.
 Future<String?> readQrText(
   BuildContext context, {
   required bool Function(String text) accept,
   required String title,
   required String hint,
-  required String what,
 }) async {
   String? text;
   if (hasCamera) {
@@ -24,10 +22,10 @@ Future<String?> readQrText(
       MaterialPageRoute(builder: (_) => ScanPage(accept: accept, title: title, hint: hint)),
     );
     if (text == ScanPage.pasteInstead && context.mounted) {
-      text = await pasteOrImage(context, accept: accept, title: title, what: what, cameraFirst: true);
+      text = await pasteOrImage(context, accept: accept, title: title);
     }
   } else {
-    text = await pasteOrImage(context, accept: accept, title: title, what: what);
+    text = await pasteOrImage(context, accept: accept, title: title);
   }
   if (text == null) return null;
   final t = text.trim();
@@ -39,7 +37,6 @@ Future<String?> pasteOrImage(
   BuildContext context, {
   required bool Function(String text) accept,
   required String title,
-  required String what,
   bool cameraFirst = false,
 }) async {
   final field = TextEditingController();
@@ -58,9 +55,7 @@ Future<String?> pasteOrImage(
         content: SizedBox(
           width: 520,
           child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(cameraFirst
-                ? 'Or paste $what.'
-                : 'Paste $what, or open an image of the QR code.'),
+            const Text('Paste the code, or open an image of it.'),
             TextField(
               controller: field,
               minLines: 2,

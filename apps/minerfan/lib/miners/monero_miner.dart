@@ -86,7 +86,7 @@ class MoneroMiner extends Miner {
   @override
   bool get canStart => walletValid;
   @override
-  String? get problem => walletValid ? error : 'Set a Monero address in this miner\'s settings';
+  String? get problem => walletValid ? error : 'Set a Monero address in the settings of this miner';
   @override
   double get hashrate => running ? (status?.hashrate ?? 0) : 0;
 

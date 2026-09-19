@@ -126,7 +126,7 @@ class _ContactsPageState extends State<ContactsPage> {
                 Padding(
                   padding: const EdgeInsets.all(16),
                   child: Text(
-                    'No contacts yet. Scan someone\'s card, or show them yours: a card carries a public key (who they '
+                    'No contacts yet. Scan a card from someone, or show them yours: a card carries a public key (who they '
                     'are, with the callsign that comes from it) and the addresses they chose to share, signed by '
                     'that key.',
                     style: muted,

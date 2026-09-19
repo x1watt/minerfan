@@ -45,7 +45,7 @@ class _ShopSettingsPageState extends State<ShopSettingsPage> {
             ),
             Padding(
               padding: const EdgeInsets.only(top: 6),
-              child: Text('It appears on the customer\'s payment screen and on every bill.', style: muted),
+              child: Text('It appears on the payment screen and on every bill.', style: muted),
             ),
             const SectionTitle('Where the money arrives'),
             Text(

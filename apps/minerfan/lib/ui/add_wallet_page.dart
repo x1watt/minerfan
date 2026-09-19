@@ -169,7 +169,7 @@ class _AddWalletPageState extends State<AddWalletPage> {
             const SizedBox(height: 8),
             ...switch (_mode) {
               'new' when _monero => [
-                  Text('Its 25 recovery words are shown on the wallet\'s page; a reminder stays until you write them '
+                  Text('Its 25 recovery words are shown on the wallet page; a reminder stays until you write them '
                       'down.', style: muted),
                 ],
               'new' => [
@@ -199,7 +199,7 @@ class _AddWalletPageState extends State<AddWalletPage> {
                         labelText: _monero ? 'Recovery words (25 words)' : 'Recovery phrase (12 to 24 words)'),
                   ),
                   const SizedBox(height: 6),
-                  Text('The wallet sees transactions from the app\'s built-in checkpoint on (a few days before this '
+                  Text('The wallet sees transactions from the built-in checkpoint on (a few days before this '
                       'version).', style: muted),
                 ],
               'view' => [
@@ -213,7 +213,7 @@ class _AddWalletPageState extends State<AddWalletPage> {
                 contentPadding: EdgeInsets.zero,
                 title: const Text('Protect with a password'),
                 subtitle: const Text('Asked for every payment and to show the backup; cannot be recovered. Without '
-                    'one, the keys are encrypted with this device\'s key.'),
+                    'one, the keys are encrypted with the device key.'),
                 value: _usePassword,
                 onChanged: _busy ? null : (v) => setState(() => _usePassword = v),
               ),

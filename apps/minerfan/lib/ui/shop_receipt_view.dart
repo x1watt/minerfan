@@ -116,7 +116,7 @@ class ReceiptView extends StatelessWidget {
           OutlinedButton.icon(
             onPressed: onScanConfirmation,
             icon: const Icon(Icons.qr_code_scanner, size: 18),
-            label: const Text('Scan the customer\'s receipt'),
+            label: const Text('Scan a receipt'),
           ),
         if (!done && onMarkPaid != null)
           OutlinedButton.icon(

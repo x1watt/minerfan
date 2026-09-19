@@ -118,15 +118,14 @@ class _ShopReceiptPageState extends State<ShopReceiptPage> {
   Future<void> _scanConfirmation() async {
     final text = await readQrText(
       context,
-      title: 'The customer\'s receipt',
-      hint: 'Point the camera at the code on the customer\'s screen.',
+      title: 'Scan a receipt',
+      hint: 'Point the camera at the code on the other screen.',
       accept: (t) => parsePaidNote(t) != null,
-      what: 'a payment receipt',
     );
     if (text == null || !mounted) return;
     final note = parsePaidNote(text);
     if (note == null) {
-      _say('That code is not a payment receipt.');
+      _say('That code is not a receipt.');
       return;
     }
     if (note.reference != _reference) {

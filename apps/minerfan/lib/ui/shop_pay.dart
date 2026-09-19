@@ -19,9 +19,8 @@ Future<void> payByScanning(BuildContext context, AppController app) async {
   final text = await readQrText(
     context,
     accept: (t) => parsePaymentUri(t) != null,
-    title: 'Scan the shop\'s code',
-    hint: 'Point the camera at the code on the shop\'s screen.',
-    what: 'the payment code (text starting with monero: or cryptoescudo:)',
+    title: 'Scan a payment code',
+    hint: 'Point the camera at the code on the other screen.',
   );
   if (text == null || !context.mounted) return;
   final request = parsePaymentUri(text);

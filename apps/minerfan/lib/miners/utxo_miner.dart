@@ -88,8 +88,8 @@ class UtxoMiner extends Miner {
   bool get canStart => payToAddress != null && (gpuName != null || cpuThreadsPlanned > 0);
   @override
   String? get problem {
-    if (payToAddress == null) return 'Create a ${coin.name} wallet in Wallets, or enter a payout address in this miner\'s settings';
-    if (gpuName == null && cpuThreadsPlanned == 0) return 'Choose a GPU or CPU threads in this miner\'s settings';
+    if (payToAddress == null) return 'Create a ${coin.name} wallet in Wallets, or enter a payout address in the settings of this miner';
+    if (gpuName == null && cpuThreadsPlanned == 0) return 'Choose a GPU or CPU threads in the settings of this miner';
     return error ?? chain.status?.miningError;
   }
 

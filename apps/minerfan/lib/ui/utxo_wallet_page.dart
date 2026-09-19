@@ -130,9 +130,9 @@ class UtxoWalletPage extends StatelessWidget {
                       padding: const EdgeInsets.all(12),
                       child: Text(
                         'This wallet checks the chain itself: it asks peers for the blocks that match its addresses (a '
-                        'bloom filter) and verifies each transaction\'s merkle proof against the headers it validated. Its '
+                        'bloom filter) and verifies the merkle proof of each transaction against the headers it validated. Its '
                         'recovery words are stored encrypted (ChaCha20-Poly1305) with ${w.hasPassword ? 'your password '
-                                  '(Argon2id)' : 'this device\'s key; set a password in the menu to protect them further'}. '
+                                  '(Argon2id)' : 'the device key; set a password in the menu to protect them further'}. '
                         'Wallets restored from recovery words see transactions from block ${w.coin.checkpointHeight} on.',
                         style: muted,
                       ),

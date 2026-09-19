@@ -284,7 +284,7 @@ class _ModSheetState extends State<_ModSheet> {
     final r = await widget.room.engine!.moderate(fields, text: text);
     if (!mounted || r == Moderated.done) return;
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(r == Moderated.tooLong ? 'That is too long.' : 'Only the room\'s moderator can do that.')));
+        content: Text(r == Moderated.tooLong ? 'That is too long.' : 'Only the moderator of this room can do that.')));
   }
 
   @override

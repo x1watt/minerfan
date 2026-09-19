@@ -209,7 +209,7 @@ class SettingsPage extends StatelessWidget {
         const SectionTitle('Monero sending'),
         Text(
           'Sending Monero needs decoy outputs from the whole chain, which the P2P network does not offer, so they come '
-          'from a node\'s RPC. It learns which outputs are requested (and your IP), never your keys. Receiving and '
+          'from the RPC of a node. It learns which outputs are requested (and your IP), never your keys. Receiving and '
           'balances use our own P2P peers only.',
           style: muted,
         ),
@@ -306,9 +306,9 @@ class _PrivateNetworkSection extends StatelessWidget {
         onChanged: app.setI2p,
       ),
       Text(
-        'This app\'s own I2P node, in pure Dart: no router to install. minerfan and xprs clients reach each other '
+        'The app runs its own I2P node, in pure Dart: no router to install. minerfan and xprs clients reach each other '
         'through it without servers and without revealing their IP addresses. Messages are XPRS packets, signed '
-        'with this device\'s callsign; direct messages are sealed to their recipient. The coins\' chat rooms '
+        'with the callsign of this device; direct messages are sealed to their recipient. The chat rooms of the coins '
         '(the Chat tab of each miner) travel on it too, and their messages are public.',
         style: muted,
       ),
@@ -322,7 +322,7 @@ class _PrivateNetworkSection extends StatelessWidget {
         _copyable(context, 'I2P address', n.address!, 'I2P address copied'),
         Text(
             'The callsign, key and address stay the same across starts; the keys are kept encrypted with this '
-            'device\'s key.',
+            'device key.',
             style: muted),
       ],
       if (n.state == PrivateNetworkState.failed)

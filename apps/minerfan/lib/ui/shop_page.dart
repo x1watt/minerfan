@@ -51,7 +51,7 @@ class ShopPage extends StatelessWidget {
             contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
             leading: const Icon(Icons.qr_code_scanner, size: 32),
             title: const Text('Pay'),
-            subtitle: const Text('Scan a shop\'s code and pay it from a wallet here'),
+            subtitle: const Text('Scan a payment code and pay it from a wallet here'),
             trailing: const Icon(Icons.chevron_right),
             onTap: () => payByScanning(context, app),
           ),

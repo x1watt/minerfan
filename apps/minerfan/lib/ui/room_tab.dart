@@ -229,7 +229,7 @@ class _StatusLine extends StatelessWidget {
         icon = Icons.cloud_off_outlined;
         text = net.state == PrivateNetworkState.failed
             ? 'The private network could not start, so the chat is offline.'
-            : 'The chat travels over this app\'s private network, which is off.';
+            : 'The chat travels over the private network of this app, which is off.';
         action = FilledButton.tonal(
           onPressed: () => app.setI2p(true),
           child: Text(net.state == PrivateNetworkState.failed ? 'Try again' : 'Join'),

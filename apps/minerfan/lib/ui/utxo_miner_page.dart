@@ -263,7 +263,7 @@ class _SettingsState extends State<_Settings> {
             contentPadding: EdgeInsets.zero,
             title: const Text('Mine on the GPU'),
             subtitle: Text(
-              'scrypt runs in our own OpenCL kernel${Platform.isAndroid ? ' on the phone\'s GPU' : ''}; every result is '
+              'scrypt runs in our own OpenCL kernel${Platform.isAndroid ? ' on the GPU of the phone' : ''}; every result is '
               'checked on the CPU before a block is sent.',
             ),
             value: s.useGpu,
@@ -450,7 +450,7 @@ class _Chain extends StatelessWidget {
             padding: const EdgeInsets.all(14),
             child: Text(
               'This miner follows the ${m.coin.name} chain itself over its P2P network, from a built-in checkpoint: it '
-              'checks every header\'s proof of work (scrypt) and difficulty (Kimoto Gravity Well) and follows the chain '
+              'checks the proof of work of every header (scrypt) and difficulty (Kimoto Gravity Well) and follows the chain '
               'with the most work. Blocks it finds go straight to its peers. No ${m.coin.name} node, pool or server '
               'is used.',
             ),

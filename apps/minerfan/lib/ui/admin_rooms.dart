@@ -29,7 +29,7 @@ class AdminRoomsSection extends StatelessWidget {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Text(
         'This device signs as ${ModerationConfig.adminCallsign}, the callsign the site publishes, so it is the one '
-        'that hands out the rooms\' moderator terms. It has to be running to notice a payment and answer it; while '
+        'that hands out the moderator terms for the rooms. It has to be running to notice a payment and answer it; while '
         'it is off, terms already given keep running and nothing else changes.',
         style: muted,
       ),

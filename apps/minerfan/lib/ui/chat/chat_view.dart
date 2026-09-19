@@ -670,7 +670,7 @@ class _ChatViewState extends State<ChatView> {
                 ListTile(
                     leading: const Icon(Icons.shield_outlined),
                     title: const Text('Hide for everyone'),
-                    subtitle: const Text('As the room\'s moderator'),
+                    subtitle: const Text('As the moderator of this room'),
                     onTap: () => act(() => widget.onModHide!(m))),
                 if (widget.onModPin != null)
                   ListTile(

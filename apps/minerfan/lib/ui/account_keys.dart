@@ -173,7 +173,7 @@ class _ImportSheetState extends State<_ImportSheet> {
         builder: (c) => AlertDialog(
           title: Text('This device signs as $_callsign'),
           content: const Text(
-              'The old key was kept aside in the app\'s folder. Start minerfan again so the callsign, the chat '
+              'The old key was kept aside in the app folder. Start minerfan again so the callsign, the chat '
               'rooms and the contact card follow the new account.'),
           actions: [TextButton(onPressed: () => Navigator.pop(c), child: const Text('OK'))],
         ),

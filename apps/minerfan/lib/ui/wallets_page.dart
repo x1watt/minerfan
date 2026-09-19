@@ -312,7 +312,7 @@ class _WalletCard extends StatelessWidget {
           content: SizedBox(
             width: 520,
             child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
-              const Text('With the private view key (64 hex characters, in your wallet\'s keys) this app scans the '
+              const Text('With the private view key (64 hex characters, in the wallet keys) this app scans the '
                   'chain for this address: incoming payments and P2Pool payouts, not spends. It cannot spend.'),
               TextField(controller: key, decoration: InputDecoration(labelText: 'Private view key', errorText: error)),
             ]),
@@ -348,14 +348,14 @@ class _WalletCard extends StatelessWidget {
           width: 520,
           child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text(keyed
-                ? 'This deletes the wallet\'s encrypted keys and its history from this device for good; the app '
+                ? 'This deletes the encrypted keys of this wallet and its history from this device for good; the app '
                     'does not make it again. Without its ${(w as KeyedWallet).backupName} the coins in it are lost, so '
-                    'show them from the wallet\'s page first if you have not written them down.'
+                    'show them from the wallet page first if you have not written them down.'
                 : 'This removes the address from the list. Nothing is lost: the app only watched it.'),
             if (miner != null) ...[
               const SizedBox(height: 12),
               Text(
-                'The $miner miner pays this address (it is typed in the miner\'s settings). Change its payout '
+                'The $miner miner pays this address (it is typed in the miner settings). Change its payout '
                 'address first, or its payouts will go to a wallet you no longer have.',
                 style: TextStyle(color: t.colorScheme.error),
               ),
