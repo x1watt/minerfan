@@ -1,31 +1,32 @@
 {
   "app": "minerfan",
-  "version": "0.2.2",
+  "version": "0.3.0",
+  "notes": "A shop at the counter, and the app now tells you when there is a new version.\n\n## Shop\n- A new Shop tab. Keep folders (Coffee, Cakes) with the things you sell: a picture, a name, a description and a price per coin, typed by you (1000 CESC, 0.0001 XMR). No exchange rates involved.\n- Tap what the customer is taking into the cart, pick the coin, and show one big QR code. It is the coin's standard pay",
   "page": "https://x1watt.github.io/minerfan/",
   "builds": {
     "android": {
-      "url": "https://github.com/x1watt/minerfan/releases/download/v0.2.2/minerfan-android.apk",
+      "url": "https://github.com/x1watt/minerfan/releases/download/v0.3.0/minerfan-android.apk",
       "file": "minerfan-android.apk",
-      "size": 66534961,
-      "sha256": "09355c838083d2fd4223d47e71110c730eb52e67288ab22e5ee1b54f554020cd"
+      "size": 67798157,
+      "sha256": "51837ea240019e0cea418e1a32e9406ce835b2ec8d40a3b67fbf7bfe1d93aadf"
     },
     "linux-x64": {
-      "url": "https://github.com/x1watt/minerfan/releases/download/v0.2.2/minerfan-linux-x64.tar.gz",
+      "url": "https://github.com/x1watt/minerfan/releases/download/v0.3.0/minerfan-linux-x64.tar.gz",
       "file": "minerfan-linux-x64.tar.gz",
-      "size": 17757586,
-      "sha256": "bc53a7505c91b3d692e1e54613e8f47fd26af80625922e4a4cf57bad493b990e"
+      "size": 17956601,
+      "sha256": "1b0c67da69759bdac95a315af88eb494f5fce7bd7a14e0cafd6d67752b4b7f4d"
     },
     "windows-x64": {
-      "url": "https://github.com/x1watt/minerfan/releases/download/v0.2.2/minerfan-windows-x64.zip",
+      "url": "https://github.com/x1watt/minerfan/releases/download/v0.3.0/minerfan-windows-x64.zip",
       "file": "minerfan-windows-x64.zip",
-      "size": 13995064,
-      "sha256": "da07760a6d56103adb85740a44bc0095efc89cfc9cb4f20c6f20f1eed1521e21"
+      "size": 14196949,
+      "sha256": "34f477c8a7cca934780d7f9c67c3c372661a8a0dbf1c73799521cebd18326c3c"
     },
     "macos": {
-      "url": "https://github.com/x1watt/minerfan/releases/download/v0.2.2/minerfan-macos.dmg",
+      "url": "https://github.com/x1watt/minerfan/releases/download/v0.3.0/minerfan-macos.dmg",
       "file": "minerfan-macos.dmg",
-      "size": 24878514,
-      "sha256": "be0dbaf5fea13dd2434fe5ffd2154151b83782f4087e90b3d57d9459bf26bd5c"
+      "size": 25339999,
+      "sha256": "6087e75cbbbd5f9a6b52d01e8ab2fee30304cb7c089b7fdcd3a2610130078cc4"
     }
   }
 }
