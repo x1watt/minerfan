@@ -1,10 +1,15 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 
 import '../contacts/qr_decode.dart';
+
+/// Whether this device can read a code with a camera. The camera plugin
+/// is phones only, so a desktop pastes the text or opens an image.
+bool get hasCamera => Platform.isAndroid || Platform.isIOS;
 
 /// Reads a QR code with the camera (phones). Frames go to a pure-Dart
 /// decoder on a short-lived isolate a few times a second; the page closes
@@ -15,7 +20,15 @@ class ScanPage extends StatefulWidget {
 
   final bool Function(String text) accept;
   final String title;
-  const ScanPage({required this.accept, this.title = 'Read a QR code', super.key});
+
+  /// The line under the picture, saying what to point at.
+  final String hint;
+  const ScanPage({
+    required this.accept,
+    this.title = 'Read a QR code',
+    this.hint = 'Point the camera at the QR code of a contact card.',
+    super.key,
+  });
 
   @override
   State<ScanPage> createState() => _ScanPageState();
@@ -98,9 +111,9 @@ class _ScanPageState extends State<ScanPage> {
                       : AspectRatio(aspectRatio: 1 / c.value.aspectRatio, child: CameraPreview(c)),
             ),
           ),
-          const Padding(
-            padding: EdgeInsets.all(16),
-            child: Text('Point the camera at the QR code of a contact card.', textAlign: TextAlign.center),
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Text(widget.hint, textAlign: TextAlign.center),
           ),
         ]),
       ),

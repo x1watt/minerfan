@@ -40,7 +40,8 @@ packages/xmr_core      Monero, pure Dart, no runtime dependencies
   p2pool/              consensus, share codec, sidechain, template, P2P peer
   node/                Monero and P2Pool network managers, node, isolate host
 apps/minerfan          the Flutter app: Dashboard, Miners (each miner has its own
-                       page), Wallets, Settings (power profile, theme color, web server/API)
+                       page), Wallets, Shop, Settings (power profile, theme color, web
+                       server/API)
 ```
 
 ## App (minerfan)
@@ -157,6 +158,57 @@ several miners:
     (`t f d ts`), as any XPRS bearer does; bodies are sealed. XPRS sealing
     is static ECDH with AES-CBC and no forward secrecy (spec section 9.2).
   - Coin rooms: see below.
+- Shop (`lib/shop/`, `lib/ui/shop_*.dart`, `shop.json` and `shop-sales.json`,
+  the Shop tab): a counter for a small shop, a coffee house being the case it
+  was built for. Nothing leaves the device and there is no server; the
+  customer pays with their own wallet.
+  - The catalogue: folders (Coffee, Cakes) holding items with a picture, a
+    title, a description and a price per coin typed by hand (1000 CESC,
+    0.0001 XMR), each price kept as integer smallest units like everywhere
+    else. An item is sold only in the coins it has a price in. `shop.json`
+    is written the way contacts are (in order, off the frame, a temporary
+    file then a rename) and keeps every key it does not know, at all three
+    levels.
+  - Pictures: a photo on phones (`camera_shot_page.dart`) or an image file
+    anywhere (`file_selector`), shrunk to 640 px and stored as a JPEG of
+    about 50 KB in `shop/images` (`shop_image.dart`, on `Isolate.run`). The
+    file is named `<itemId>-<seconds>`, so replacing one never shows the
+    old one from Flutter's image cache; pictures no item names are swept
+    away at startup.
+  - The bill: the owner taps items into a cart, picks the coin with a chip
+    and shows one big QR. The code is the standard payment URI for that
+    coin (`payment_uri.dart`), `monero:<address>?tx_amount=..&
+    tx_description=..` or BIP21 `cryptoescudo:<address>?amount=..&
+    message=..`, so any wallet can pay it; `cesc:` is read as an alias.
+    Each bill gets a short reference (`GWUA`) that goes in the description
+    and on the screen. The receiving wallet per coin is chosen once in the
+    shop settings, so a Cryptoescudo bill always gets a fresh address.
+  - Settling (`receipt.dart`): the shop watches the wallet that takes the
+    coin, on the status it already receives every two seconds, and settles
+    a bill on a payment that is new (not in the wallet when the bill was
+    made), not a mining reward, not already counted for another bill, and
+    at least the amount asked, so a tip settles it too. Cryptoescudo shows
+    an unconfirmed payment with its txid; Monero only as a rise in what the
+    mempool holds, so a Monero bill says "payment received" without one.
+    There is always a "Mark as paid" for cash and for anything the watch
+    cannot see.
+  - Which bill a payment belongs to: the description in a payment code
+    stays in the wallet that pays, it is not part of the transaction, so a
+    reference alone cannot be matched on the chain. A customer paying with
+    minerfan hands the shop a signed receipt instead
+    (`minerfan-paid:1.<payload>.<signature>`, `paid_note.dart`, signed with
+    the station key like a contact card) naming the reference and the
+    txid; the shop looks that txid up in its own wallet before it settles
+    anything, so the note is a hint and never proof. Carrying the reference
+    on the chain itself (a Monero payment id, an OP_RETURN output) would be
+    wallet level work and is not done.
+  - Paying (`shop_pay.dart`, `pay.dart`): the Pay button reads a code with
+    the camera or, on a desktop, from a paste or an image (`qr_input.dart`,
+    shared with contacts), shows what is being paid and to whom, and sends
+    it from a chosen wallet the way `payForModeration` does.
+  - Takings: every settled bill is kept in `shop-sales.json` (time,
+    reference, coin, amount, order, txid) and the Shop tab shows what came
+    in today.
 - Coin rooms (`packages/xprs_room`, `lib/network/rooms.dart`, the Chat tab
   of each miner's page): one chat per mined coin, so people mining it can
   share how it goes. No server; a moderator's rights can be bought (below).
@@ -306,7 +358,7 @@ several miners:
 - UI (`lib/ui/`): Dashboard (master switch, total hashrate, one card per
   miner with its switch and a chip to its chat, with the count of new
   messages), Miners (list; each opens its page: Overview, Settings, Pool,
-  Chain, Rewards, Log, Chat), Settings. A true-black theme (`lib/theme.dart`)
+  Chain, Rewards, Log, Chat), Wallets, Shop, Settings. A true-black theme (`lib/theme.dart`)
   with one accent color; Material's seed-derived surfaces were what tinted
   the old theme brown. The web server/API switch is shown but not built
   yet.

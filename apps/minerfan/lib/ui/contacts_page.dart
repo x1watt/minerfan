@@ -1,4 +1,3 @@
-import 'dart:io';
 
 import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +12,7 @@ import 'field_types.dart';
 import 'my_card_page.dart';
 import 'scan_page.dart';
 
-bool get _hasCamera => Platform.isAndroid || Platform.isIOS;
+bool get _hasCamera => hasCamera;
 
 /// The address book: search, your own card, and every contact. Contacts
 /// come from a scanned or pasted card (signed by their key) or are typed

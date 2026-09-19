@@ -118,6 +118,9 @@ class Shop extends ChangeNotifier {
     }
   }
 
+  /// Tells the screens something changed that is not saved (the cart).
+  void notify() => notifyListeners();
+
   /// Waits for the writes in flight (tests, shutdown).
   Future<void> flush() => _writing;
 

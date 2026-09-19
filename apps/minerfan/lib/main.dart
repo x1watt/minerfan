@@ -7,6 +7,7 @@ import 'ui/contacts_page.dart';
 import 'ui/dashboard.dart';
 import 'ui/miners_page.dart';
 import 'ui/settings_page.dart';
+import 'ui/shop_page.dart';
 import 'ui/wallets_page.dart';
 
 void main() {
@@ -45,8 +46,8 @@ class MinerfanApp extends StatelessWidget {
   }
 }
 
-/// Four places: the dashboard, the miners (each with its own page), the
-/// wallets and the app settings.
+/// Five places: the dashboard, the miners (each with its own page), the
+/// wallets, the shop and the app settings.
 class Home extends StatefulWidget {
   final AppController app;
   const Home({super.key, required this.app});
@@ -119,13 +120,14 @@ class _HomeState extends State<Home> {
     (Icons.dashboard_outlined, Icons.dashboard, 'Dashboard'),
     (Icons.memory_outlined, Icons.memory, 'Miners'),
     (Icons.account_balance_wallet_outlined, Icons.account_balance_wallet, 'Wallets'),
+    (Icons.storefront_outlined, Icons.storefront, 'Shop'),
     (Icons.settings_outlined, Icons.settings, 'Settings'),
   ];
 
   @override
   Widget build(BuildContext context) {
     final app = widget.app;
-    final pages = [DashboardPage(app), MinersPage(app), WalletsPage(app), SettingsPage(app)];
+    final pages = [DashboardPage(app), MinersPage(app), WalletsPage(app), ShopPage(app), SettingsPage(app)];
     final wide = MediaQuery.sizeOf(context).width >= 720;
     final body = SafeArea(child: pages[_index]);
     return Scaffold(
