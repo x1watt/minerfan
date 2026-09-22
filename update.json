@@ -15,6 +15,18 @@
       "file": "minerfan-linux-x64.tar.gz",
       "size": 17956979,
       "sha256": "f72f8fba1dee0562b04d730707fa447e1e4574347d9325696f8e6f0d64fcbf34"
+    },
+    "windows-x64": {
+      "url": "https://github.com/x1watt/minerfan/releases/download/v0.3.1/minerfan-windows-x64.zip",
+      "file": "minerfan-windows-x64.zip",
+      "size": 14196504,
+      "sha256": "f67e5554a2f92b5f42379cef9746e5dd55ec365c400d3aee544083cf5c75bb7e"
+    },
+    "macos": {
+      "url": "https://github.com/x1watt/minerfan/releases/download/v0.3.1/minerfan-macos.dmg",
+      "file": "minerfan-macos.dmg",
+      "size": 25339530,
+      "sha256": "f242f64267bcf5b0e6e1456f00b83d32ce3ccb6624569cc10774138333669a0b"
     }
   }
 }
