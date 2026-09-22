@@ -5,7 +5,7 @@
 
 /// This build's version, the same string as `version:` in pubspec.yaml
 /// without the build number.
-const appVersion = '0.3.0';
+const appVersion = '0.3.1';
 
 /// Compares two versions of the shape `1.2.3` (a `+build` or a `-beta.1`
 /// tail is allowed): negative when [a] is older, zero when they are the
